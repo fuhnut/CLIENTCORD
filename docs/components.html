@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>building components</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>building components</h1>
+            <p>components are built with builders. each builder is a python class that represents a component. you
+                customize it by chaining <code>.set_</code> methods.</p>
+            <p>every interactive component must have a <code>custom_id</code> - a unique identifier used for handling
+                interactions when a user clicks or selects something.</p>
+
+            <h2>action row</h2>
+            <p>all builders are sent inside an <code>ActionRow</code>. each message can contain a maximum of 5 action
+                rows.</p>
+
+            <div class="file-label">creating an action row</div>
+            <pre><code class="language-python">from clientcord.components import ActionRow
+
+row = ActionRow().set_components([]).add_components()</code></pre>
+
+            <h2>buttons</h2>
+            <p>an action row should contain no more than 5 buttons.</p>
+
+            <div class="file-label">building a button</div>
+            <pre><code class="language-python">from clientcord.components import ActionRow, Button, ButtonStyle
+
+button = (
+    Button()
+    .set_custom_id("first-button")
+    .set_style(ButtonStyle.primary)
+    .set_label("first button")
+)
+
+row = ActionRow().set_components([button])</code></pre>
+
+            <h2>sending components</h2>
+            <p>after creating the components, send the action row in the <code>components</code> field.</p>
+
+            <div class="file-label">commands/ping.py</div>
+            <pre><code class="language-python">from clientcord.declare import command
+from clientcord.components import ActionRow, Button, ButtonStyle
+
+@command(name="ping", description="show the ping")
+class PingCommand:
+    async def run(self, ctx):
+        row = ActionRow().set_components([
+            Button()
+            .set_custom_id("pingbtn")
+            .set_label("pong")
+            .set_style(ButtonStyle.primary)
+        ])
+
+        await ctx.write({
+            "content": "pong",
+            "components": [row.to_dict()]
+        })</code></pre>
+
+            <h2>string select menu</h2>
+            <div class="file-label">building a string select</div>
+            <pre><code class="language-python">from clientcord.components import (
+    ActionRow, StringSelectMenu, StringSelectOption
+)
+
+menu = (
+    StringSelectMenu()
+    .set_custom_id("color_pick")
+    .set_placeholder("pick a color")
+    .set_options([
+        StringSelectOption().set_label("red").set_value("red"),
+        StringSelectOption().set_label("blue").set_value("blue"),
+        StringSelectOption().set_label("green").set_value("green"),
+    ])
+)
+
+row = ActionRow().set_components([menu])</code></pre>
+
+            <h2>user select menu</h2>
+            <div class="file-label">building a user select</div>
+            <pre><code class="language-python">from clientcord.components import ActionRow, UserSelectMenu
+
+menu = (
+    UserSelectMenu()
+    .set_custom_id("user_pick")
+    .set_placeholder("select a user")
+)
+
+row = ActionRow().set_components([menu])</code></pre>
+
+            <h2>role select menu</h2>
+            <div class="file-label">building a role select</div>
+            <pre><code class="language-python">from clientcord.components import ActionRow, RoleSelectMenu
+
+menu = (
+    RoleSelectMenu()
+    .set_custom_id("role_pick")
+    .set_placeholder("which role?")
+    .set_max_values(3)
+)
+
+row = ActionRow().set_components([menu])</code></pre>
+
+            <h2>channel select menu</h2>
+            <div class="file-label">building a channel select</div>
+            <pre><code class="language-python">from clientcord.components import ActionRow, ChannelSelectMenu
+
+menu = (
+    ChannelSelectMenu()
+    .set_custom_id("channel_pick")
+    .set_channel_types([0])
+    .set_placeholder("which text channel?")
+)
+
+row = ActionRow().set_components([menu])</code></pre>
+
+            <h2>mentionable select menu</h2>
+            <div class="file-label">building a mentionable select</div>
+            <pre><code class="language-python">from clientcord.components import ActionRow, MentionableSelectMenu
+
+menu = (
+    MentionableSelectMenu()
+    .set_custom_id("mention_pick")
+    .set_placeholder("who?")
+)
+
+row = ActionRow().set_components([menu])</code></pre>
+
+            <h2>text display (components v2)</h2>
+            <p>text display renders markdown text. requires the <code>IS_COMPONENTS_V2</code> flag.</p>
+
+            <div class="file-label">using text display</div>
+            <pre><code class="language-python">from clientcord.components import TextDisplay, build_components_payload
+
+payload = build_components_payload([
+    TextDisplay().set_content("# hello there"),
+    TextDisplay().set_content("this uses components v2"),
+])</code></pre>
+
+            <h2>sections with thumbnails</h2>
+            <p>sections associate text content with an accessory like a thumbnail image.</p>
+
+            <div class="file-label">building a section</div>
+            <pre><code class="language-python">from clientcord.components import Section, TextDisplay, Thumbnail, build_components_payload
+
+payload = build_components_payload([
+    Section()
+    .set_components([
+        TextDisplay().set_content("# user profile"),
+        TextDisplay().set_content("username: bobby"),
+        TextDisplay().set_content("level: 42"),
+    ])
+    .set_accessory(
+        Thumbnail().set_url("https://example.com/avatar.png")
+    )
+])</code></pre>
+
+            <h2>containers</h2>
+            <p>containers visually group components with an optional accent color.</p>
+
+            <div class="file-label">building a container</div>
+            <pre><code class="language-python">from clientcord.components import (
+    Container, TextDisplay, Separator, ActionRow, Button, ButtonStyle,
+    build_components_payload
+)
+
+payload = build_components_payload([
+    Container()
+    .set_accent_color(0x5865F2)
+    .set_components([
+        TextDisplay().set_content("# server rules"),
+        TextDisplay().set_content("1. be respectful"),
+        TextDisplay().set_content("2. no spam"),
+        Separator(),
+        ActionRow().set_components([
+            Button()
+            .set_custom_id("agree")
+            .set_label("i agree")
+            .set_style(ButtonStyle.success)
+        ])
+    ])
+])</code></pre>
+
+            <h2>media gallery</h2>
+            <div class="file-label">building a media gallery</div>
+            <pre><code class="language-python">from clientcord.components import MediaGallery, MediaGalleryItem, build_components_payload
+
+payload = build_components_payload([
+    MediaGallery().set_items([
+        MediaGalleryItem().set_url("https://example.com/img1.png").set_description("first"),
+        MediaGalleryItem().set_url("https://example.com/img2.png").set_description("second"),
+    ])
+])</code></pre>
+
+            <h2>all component types</h2>
+            <ul>
+                <li><code>TextDisplay</code> - markdown text content</li>
+                <li><code>Button</code> - clickable button (primary, secondary, success, danger, link)</li>
+                <li><code>ActionRow</code> - row container for buttons and selects</li>
+                <li><code>StringSelectMenu</code> - dropdown with custom text options</li>
+                <li><code>UserSelectMenu</code> - dropdown auto-populated with server users</li>
+                <li><code>RoleSelectMenu</code> - dropdown auto-populated with server roles</li>
+                <li><code>MentionableSelectMenu</code> - dropdown for users and roles</li>
+                <li><code>ChannelSelectMenu</code> - dropdown auto-populated with channels</li>
+                <li><code>TextInput</code> - free-form text (modals only)</li>
+                <li><code>Section</code> - text with an accessory (thumbnail or button)</li>
+                <li><code>Container</code> - visual grouping with accent color</li>
+                <li><code>Thumbnail</code> - small image accessory</li>
+                <li><code>MediaGallery</code> - image gallery</li>
+                <li><code>FileComponent</code> - attached file display</li>
+                <li><code>Separator</code> - vertical spacing divider</li>
+                <li><code>Label</code> - wraps a component with a label (modals)</li>
+                <li><code>Modal</code> - popup form with labeled components</li>
+            </ul>
+
+            <div class="nav-footer">
+                <a href="prefix-commands.html">&larr; prev: prefix commands</a>
+                <a href="handling-components.html">next: handling components &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

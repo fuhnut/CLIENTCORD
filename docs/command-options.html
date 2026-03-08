@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>command options</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>command options</h1>
+            <p>options let users pass inputs into your commands. clientcord provides typed option constructors for every
+                discord option type.</p>
+
+            <h2>string options</h2>
+            <div class="file-label">commands/greet.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import string_option
+
+@options(
+    name=string_option(description="who to greet", required=True)
+)
+@command(name="greet", description="greet someone")
+class GreetCommand:
+    async def run(self, ctx, name: str):
+        await ctx.write(f"hello {name}!")</code></pre>
+
+            <h2>integer options</h2>
+            <div class="file-label">commands/roll.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import integer_option
+
+@options(
+    sides=integer_option(description="number of sides", required=False)
+)
+@command(name="roll", description="roll a die")
+class RollCommand:
+    async def run(self, ctx, sides: int = 6):
+        import random
+        result = random.randint(1, sides)
+        await ctx.write(f"rolled a {result}")</code></pre>
+
+            <h2>boolean options</h2>
+            <div class="file-label">commands/ping.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import boolean_option
+
+@options(
+    hide=boolean_option(description="hide the response")
+)
+@command(name="ping", description="show latency")
+class PingCommand:
+    async def run(self, ctx, hide: bool = False):
+        await ctx.write("pong")</code></pre>
+
+            <h2>user options</h2>
+            <div class="file-label">commands/info.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import user_option
+from clientcord.models import User
+
+@options(
+    target=user_option(description="user to look up", required=True)
+)
+@command(name="info", description="get user info")
+class InfoCommand:
+    async def run(self, ctx, target: User):
+        await ctx.write(f"user id: {target.id}")</code></pre>
+
+            <h2>channel options</h2>
+            <div class="file-label">commands/setchannel.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import channel_option
+
+@options(
+    channel=channel_option(description="target channel", required=True)
+)
+@command(name="setchannel", description="set a channel")
+class SetChannelCommand:
+    async def run(self, ctx, channel):
+        await ctx.write(f"channel set to {channel}")</code></pre>
+
+            <h2>role options</h2>
+            <div class="file-label">commands/giverole.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import role_option
+
+@options(
+    role=role_option(description="role to assign", required=True)
+)
+@command(name="giverole", description="assign a role")
+class GiveRoleCommand:
+    async def run(self, ctx, role):
+        await ctx.write(f"assigned role: {role}")</code></pre>
+
+            <h2>attachment options</h2>
+            <div class="file-label">commands/upload.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import attachment_option
+
+@options(
+    file=attachment_option(description="file to upload", required=True)
+)
+@command(name="upload", description="upload a file")
+class UploadCommand:
+    async def run(self, ctx, file):
+        await ctx.write(f"received file: {file}")</code></pre>
+
+            <div class="nav-footer">
+                <a href="events.html">&larr; prev: listening to events</a>
+                <a href="middlewares.html">next: command middlewares &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

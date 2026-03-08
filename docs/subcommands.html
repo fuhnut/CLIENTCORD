@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>clientcord - docs</title>
+    <title>sub commands</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet"
@@ -18,10 +18,7 @@
 <body>
     <div class="layout">
         <nav class="sidebar">
-            <div class="sidebar-logo">
-                <img src="https://files.catbox.moe/zjxudh.png" alt="logo">
-                clientcord
-            </div>
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
             <div class="sidebar-section">getting started</div>
             <a class="sidebar-link" href="index.html">introduction</a>
             <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
@@ -33,53 +30,53 @@
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
-            <div class="sidebar-section">components</div>
+            <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
         </nav>
         <div class="main">
 
-            <h1>clientcord</h1>
-            <p>extremely fast. very low ram. fully typed. totally modular. decorator-driven discord framework for python
-                3.12+.</p>
+            <h1>sub commands</h1>
+            <p>subcommands let you group related functionality under a single parent command. for example,
+                <code>/account create</code> and <code>/account delete</code>.
+            </p>
 
-            <h2>what is clientcord</h2>
-            <p>clientcord is a from-scratch discord bot framework that prioritizes performance and developer experience.
-                it uses decorator-driven architecture inspired by modern frameworks like fastapi and seyfert. it does
-                not imitate discord.py.</p>
+            <h2>creating subcommands</h2>
+            <p>define each subcommand as its own class, then group them under a parent.</p>
 
-            <h2>core libraries</h2>
-            <ul>
-                <li><code>msgspec</code> - fast json parsing and typed structs</li>
-                <li><code>aiosonic</code> - async http requests</li>
-                <li><code>websockets</code> - gateway connection</li>
-                <li><code>isal</code> - zlib decompression</li>
-                <li><code>uvloop</code> - fast event loop (linux only)</li>
-                <li><code>lmdb</code> - disk-backed cache for low ram</li>
-                <li><code>xxhash</code> - fast hashing</li>
-                <li><code>psutil</code> - memory tracking</li>
-            </ul>
+            <div class="file-label">commands/account_create.py</div>
+            <pre><code class="language-python">from clientcord.declare import command
 
-            <h2>installation</h2>
-            <div class="file-label">terminal</div>
-            <pre><code class="language-bash">pip install msgspec aiosonic websockets isal uvloop aiodns lmdb xxhash colorama psutil</code></pre>
+@command(name="create", description="create an account", parent="account")
+class AccountCreate:
+    async def run(self, ctx):
+        await ctx.write("account created")</code></pre>
+
+            <div class="file-label">commands/account_delete.py</div>
+            <pre><code class="language-python">from clientcord.declare import command
+
+@command(name="delete", description="delete your account", parent="account")
+class AccountDelete:
+    async def run(self, ctx):
+        await ctx.write("account deleted")</code></pre>
+
+            <div class="callout">the <code>parent</code> parameter in the <code>@command</code> decorator tells
+                clientcord which parent command to group the subcommand under. discord will show these as
+                <code>/account create</code> and <code>/account delete</code>.
+            </div>
 
             <h2>project structure</h2>
-            <p>after setup, your project should look like this:</p>
             <div class="tree">
                 commands/<br>
-                &nbsp;&nbsp;ping.py<br>
-                components/<br>
-                events/<br>
-                &nbsp;&nbsp;ready.py<br>
-                cc_init.py<br>
-                bot.py
+                &nbsp;&nbsp;account_create.py<br>
+                &nbsp;&nbsp;account_delete.py<br>
+                &nbsp;&nbsp;ping.py
             </div>
 
             <div class="nav-footer">
-                <span></span>
-                <a href="configuring.html">next: configuring clientcord &rarr;</a>
+                <a href="middlewares.html">&larr; prev: command middlewares</a>
+                <a href="error-handling.html">next: handling errors &rarr;</a>
             </div>
 
             <footer>clientcord &copy; 2026</footer>

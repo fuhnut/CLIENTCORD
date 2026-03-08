@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>command middlewares</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>command middlewares</h1>
+            <p>middlewares are functions that run before a command executes. use them for permission checks, logging,
+                rate limiting, or anything that should gate command access.</p>
+
+            <h2>creating a middleware</h2>
+            <div class="file-label">middlewares/logger.py</div>
+            <pre><code class="language-python">from clientcord.declare import middleware
+
+@middleware("logger")
+async def logger_middleware(ctx, next_mw, stop):
+    print(f"{ctx.user.id} ran a command")
+    await next_mw()</code></pre>
+
+            <p>the middleware receives three arguments:</p>
+            <ul>
+                <li><code>ctx</code> - the command context</li>
+                <li><code>next_mw</code> - call this to pass to the next middleware or the command</li>
+                <li><code>stop</code> - call this with a reason to block the command</li>
+            </ul>
+
+            <h2>using a middleware on a command</h2>
+            <div class="file-label">commands/shutdown.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, middleware
+
+@middleware("is_developer")
+async def is_dev(ctx, next_mw, stop):
+    if ctx.user.id != "your-user-id":
+        return stop("unauthorized")
+    await next_mw()
+
+@command(name="shutdown", description="shut down the bot")
+@is_dev
+class ShutdownCommand:
+    async def run(self, ctx):
+        await ctx.write("shutting down")</code></pre>
+
+            <h2>stopping a middleware with an error</h2>
+            <p>when a middleware calls <code>stop()</code>, the command will not execute and the error is forwarded to
+                the <code>on_middleware_error</code> handler on the command class.</p>
+
+            <div class="file-label">commands/admin.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, middleware
+
+@middleware("admin_only")
+async def admin_check(ctx, next_mw, stop):
+    if not ctx.user.id == "admin-id":
+        return stop("you are not an admin")
+    await next_mw()
+
+@command(name="nuke", description="delete all messages")
+@admin_check
+class NukeCommand:
+    async def run(self, ctx):
+        await ctx.write("nuking channel")
+
+    async def on_middleware_error(self, ctx, error):
+        await ctx.write(f"blocked: {error}")</code></pre>
+
+            <h2>passing data through middlewares</h2>
+            <p>you can pass data from a middleware to the command by attaching it to the context.</p>
+
+            <div class="file-label">middlewares/timer.py</div>
+            <pre><code class="language-python">import time
+from clientcord.declare import middleware
+
+@middleware("timer")
+async def timer_middleware(ctx, next_mw, stop):
+    ctx.start_time = time.time()
+    await next_mw()</code></pre>
+
+            <div class="nav-footer">
+                <a href="command-options.html">&larr; prev: command options</a>
+                <a href="subcommands.html">next: sub commands &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

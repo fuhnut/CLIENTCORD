@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>handling errors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>handling errors</h1>
+            <p>clientcord provides structured error handling. each type of error can be caught separately on your
+                command class.</p>
+
+            <h2>error in command execution</h2>
+            <p>if an error is thrown in the <code>run</code> method, clientcord calls <code>on_error</code>.</p>
+
+            <div class="file-label">commands/fail.py</div>
+            <pre><code class="language-python">from clientcord.declare import command
+
+@command(name="fail", description="a command that fails")
+class FailCommand:
+    async def run(self, ctx):
+        raise Exception("something broke")
+
+    async def on_error(self, ctx, error):
+        await ctx.write(f"error: {error}")</code></pre>
+
+            <h2>error in option validation</h2>
+            <p>when an option fails validation, clientcord calls <code>on_option_error</code> with a list of error
+                strings.</p>
+
+            <div class="file-label">commands/validated.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import string_option
+
+@options(
+    url=string_option(description="a valid url", required=True)
+)
+@command(name="fetch", description="fetch a url")
+class FetchCommand:
+    async def run(self, ctx, url: str):
+        await ctx.write(f"fetching {url}")
+
+    async def on_option_error(self, ctx, errors):
+        await ctx.write(f"invalid options: {', '.join(errors)}")</code></pre>
+
+            <h2>error from middleware</h2>
+            <p>when a middleware calls <code>stop()</code>, clientcord calls <code>on_middleware_error</code>.</p>
+
+            <div class="file-label">commands/restricted.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, middleware
+
+@middleware("owner_only")
+async def owner_check(ctx, next_mw, stop):
+    if ctx.user.id != "owner-id":
+        return stop("not the bot owner")
+    await next_mw()
+
+@command(name="restart", description="restart the bot")
+@owner_check
+class RestartCommand:
+    async def run(self, ctx):
+        await ctx.write("restarting")
+
+    async def on_middleware_error(self, ctx, error):
+        await ctx.write(f"blocked: {error}")</code></pre>
+
+            <div class="callout">if you don't define these error handlers on your command class, clientcord uses default
+                handlers that log the error and reply with a generic message.</div>
+
+            <div class="nav-footer">
+                <a href="subcommands.html">&larr; prev: sub commands</a>
+                <a href="prefix-commands.html">next: prefix commands &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

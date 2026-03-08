@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>configuring clientcord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="https://files.catbox.moe/zjxudh.png" alt="logo">
+                clientcord
+            </div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>configuring clientcord</h1>
+            <p>clientcord is set up to automatically load your commands, events, and components from directories you
+                specify.</p>
+
+            <h2>creating the config file</h2>
+            <p>create a file called <code>cc_init.py</code> in the root of your project. this is where clientcord picks
+                up your token, intents, prefix, and folder locations.</p>
+
+            <div class="file-label">cc_init.py</div>
+            <pre><code class="language-python">from clientcord.intents import Intents
+
+token = "your-bot-token-here"
+intents = Intents.default()
+prefix = "!"
+
+commands = "/commands"
+components = "/components"
+events = "/events"</code></pre>
+
+            <div class="callout">the <code>commands</code>, <code>components</code>, and <code>events</code> fields tell
+                clientcord which folders to auto-load python files from at startup. every <code>.py</code> file inside
+                those folders will be imported automatically.</div>
+
+            <h2>selecting the bot type</h2>
+            <p>clientcord supports the gateway (websocket) connection to discord. the gateway client handles all events
+                emitted by discord such as <code>MESSAGE_CREATE</code>, <code>INTERACTION_CREATE</code>,
+                <code>GUILD_CREATE</code>, <code>READY</code>, among others.
+            </p>
+            <p>the available events depend on the intents configured in your <code>cc_init.py</code>.</p>
+
+            <h2>intents</h2>
+            <p>intents use python's <code>IntFlag</code> for type-safe bitwise operations. here are the available
+                methods:</p>
+
+            <div class="file-label">intents usage</div>
+            <pre><code class="language-python">from clientcord.intents import Intents
+
+all_intents = Intents.all()
+
+default_intents = Intents.default()
+
+custom = Intents.guilds | Intents.guild_messages | Intents.message_content</code></pre>
+
+            <h2>creating the main file</h2>
+            <p>create your main bot script. this is the entry point that starts the gateway connection and loads
+                everything.</p>
+
+            <div class="file-label">bot.py</div>
+            <pre><code class="language-python">from clientcord.client import Client
+
+client = Client()
+
+if __name__ == "__main__":
+    client.run()</code></pre>
+
+            <p>when you call <code>client.run()</code>, clientcord will:</p>
+            <ul>
+                <li>read your <code>cc_init.py</code> config</li>
+                <li>auto-load all files from your <code>/commands</code>, <code>/components</code>, and
+                    <code>/events</code> folders
+                </li>
+                <li>compile execution plans for all registered commands</li>
+                <li>connect to the discord gateway</li>
+            </ul>
+
+            <h2>project structure</h2>
+            <p>after these steps your project should look like this:</p>
+            <div class="tree">
+                commands/<br>
+                components/<br>
+                events/<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
+            <div class="nav-footer">
+                <a href="index.html">&larr; prev: introduction</a>
+                <a href="first-command.html">next: creating your first command &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

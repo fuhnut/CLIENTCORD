@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>handling components</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>handling components</h1>
+            <p>after sending a component in a message, you need to handle the interaction when a user clicks a button or
+                selects an option.</p>
+
+            <h2>step 1: update your config</h2>
+            <p>make sure your <code>cc_init.py</code> has the components folder set so clientcord knows where to
+                auto-load handlers from.</p>
+
+            <div class="file-label">cc_init.py</div>
+            <pre><code class="language-python">from clientcord.intents import Intents
+
+token = "your-token"
+intents = Intents.default()
+prefix = "!"
+
+commands = "/commands"
+components = "/components"
+events = "/events"</code></pre>
+
+            <h2>step 2: create a component handler</h2>
+            <p>create a file inside the <code>/components</code> directory. make a class that extends
+                <code>ComponentCommand</code> and set the <code>component_type</code> to the type you want to handle.
+            </p>
+
+            <div class="file-label">components/hello_button.py</div>
+            <pre><code class="language-python">from clientcord.components import ComponentCommand
+
+class HelloWorldButton(ComponentCommand):
+    component_type = "Button"</code></pre>
+
+            <h2>step 3: filter component interactions</h2>
+            <p>you want the handler to only respond to the specific component. use the <code>filter</code> method and
+                check the <code>custom_id</code>.</p>
+
+            <div class="file-label">components/hello_button.py</div>
+            <pre><code class="language-python">from clientcord.components import ComponentCommand
+
+class HelloWorldButton(ComponentCommand):
+    component_type = "Button"
+
+    def filter(self, ctx):
+        return ctx.custom_id == "hello-world"</code></pre>
+
+            <h2>step 4: run the handler</h2>
+            <p>if <code>filter</code> returns <code>True</code>, clientcord executes the <code>run</code> method.</p>
+
+            <div class="file-label">components/hello_button.py</div>
+            <pre><code class="language-python">from clientcord.components import ComponentCommand
+
+class HelloWorldButton(ComponentCommand):
+    component_type = "Button"
+
+    def filter(self, ctx):
+        return ctx.custom_id == "hello-world"
+
+    async def run(self, ctx):
+        await ctx.write({"content": "hello world"})</code></pre>
+
+            <div class="callout">component handlers are auto-loaded from the <code>/components</code> folder. no manual
+                registration needed. each file should contain one handler class.</div>
+
+            <h2>handling select menus</h2>
+            <p>works the same way. just set <code>component_type</code> to the select type.</p>
+
+            <div class="file-label">components/color_picker.py</div>
+            <pre><code class="language-python">from clientcord.components import ComponentCommand
+
+class ColorPicker(ComponentCommand):
+    component_type = "StringSelect"
+
+    def filter(self, ctx):
+        return ctx.custom_id == "color_pick"
+
+    async def run(self, ctx):
+        selected = ctx.values[0]
+        await ctx.write({"content": f"you picked {selected}"})</code></pre>
+
+            <h2>available component types for handlers</h2>
+            <ul>
+                <li><code>"Button"</code></li>
+                <li><code>"StringSelect"</code></li>
+                <li><code>"UserSelect"</code></li>
+                <li><code>"RoleSelect"</code></li>
+                <li><code>"ChannelSelect"</code></li>
+                <li><code>"MentionableSelect"</code></li>
+            </ul>
+
+            <h2>project structure</h2>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                components/<br>
+                &nbsp;&nbsp;hello_button.py<br>
+                &nbsp;&nbsp;color_picker.py<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
+            <div class="nav-footer">
+                <a href="components.html">&larr; prev: building components</a>
+                <a href="modals.html">next: modals &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

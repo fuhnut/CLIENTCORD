@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>prefix commands</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>prefix commands</h1>
+            <p>clientcord handles prefix commands alongside slash commands. they share the same command classes and
+                options system.</p>
+
+            <h2>configuring the prefix</h2>
+            <p>set the <code>prefix</code> field in your <code>cc_init.py</code>. you can use a single prefix or
+                configure multiple.</p>
+
+            <div class="file-label">cc_init.py</div>
+            <pre><code class="language-python">from clientcord.intents import Intents
+
+token = "your-token"
+intents = Intents.default()
+prefix = "!"
+
+commands = "/commands"
+events = "/events"</code></pre>
+
+            <h2>multiple prefixes</h2>
+            <p>to use multiple prefixes, pass a lambda to the client configuration that returns a list.</p>
+
+            <div class="file-label">bot.py</div>
+            <pre><code class="language-python">from clientcord.client import Client
+
+client = Client(commands={
+    "prefix": lambda msg: ["!", "?", "."]
+})
+
+if __name__ == "__main__":
+    client.run()</code></pre>
+
+            <h2>how prefix commands work</h2>
+            <p>when a user sends a message starting with the configured prefix, clientcord:</p>
+            <ul>
+                <li>strips the prefix from the message</li>
+                <li>parses the command name and arguments</li>
+                <li>looks up the matching command class</li>
+                <li>executes it with the same context system as slash commands</li>
+            </ul>
+
+            <h2>prefix command with options</h2>
+            <p>options work the same way. users pass them after the command name separated by spaces.</p>
+
+            <div class="file-label">terminal usage</div>
+            <pre><code class="language-bash">!greet bobby</code></pre>
+
+            <div class="file-label">commands/greet.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import string_option
+
+@options(
+    name=string_option(description="who to greet", required=True)
+)
+@command(name="greet", description="greet someone")
+class GreetCommand:
+    async def run(self, ctx, name: str):
+        await ctx.write(f"hello {name}!")</code></pre>
+
+            <div class="nav-footer">
+                <a href="error-handling.html">&larr; prev: handling errors</a>
+                <a href="components.html">next: building components &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

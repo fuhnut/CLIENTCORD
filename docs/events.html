@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>clientcord - docs</title>
+    <title>listening to events</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet"
@@ -33,53 +33,82 @@
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
-            <div class="sidebar-section">components</div>
+            <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
         </nav>
         <div class="main">
 
-            <h1>clientcord</h1>
-            <p>extremely fast. very low ram. fully typed. totally modular. decorator-driven discord framework for python
-                3.12+.</p>
+            <h1>listening to events</h1>
+            <p>events let your bot react to things happening on discord, like messages being sent, members joining, or
+                the bot going online.</p>
 
-            <h2>what is clientcord</h2>
-            <p>clientcord is a from-scratch discord bot framework that prioritizes performance and developer experience.
-                it uses decorator-driven architecture inspired by modern frameworks like fastapi and seyfert. it does
-                not imitate discord.py.</p>
+            <h2>step 1: update your config</h2>
+            <p>make sure your <code>cc_init.py</code> has the events folder configured.</p>
 
-            <h2>core libraries</h2>
-            <ul>
-                <li><code>msgspec</code> - fast json parsing and typed structs</li>
-                <li><code>aiosonic</code> - async http requests</li>
-                <li><code>websockets</code> - gateway connection</li>
-                <li><code>isal</code> - zlib decompression</li>
-                <li><code>uvloop</code> - fast event loop (linux only)</li>
-                <li><code>lmdb</code> - disk-backed cache for low ram</li>
-                <li><code>xxhash</code> - fast hashing</li>
-                <li><code>psutil</code> - memory tracking</li>
-            </ul>
+            <div class="file-label">cc_init.py</div>
+            <pre><code class="language-python">from clientcord.intents import Intents
 
-            <h2>installation</h2>
-            <div class="file-label">terminal</div>
-            <pre><code class="language-bash">pip install msgspec aiosonic websockets isal uvloop aiodns lmdb xxhash colorama psutil</code></pre>
+token = "your-token"
+intents = Intents.default()
+prefix = "!"
+
+commands = "/commands"
+components = "/components"
+events = "/events"</code></pre>
+
+            <h2>step 2: create event files</h2>
+            <p>each event file uses the <code>@event</code> decorator and an async function. place them inside the
+                <code>/events</code> folder.
+            </p>
+
+            <h3>example: bot ready event</h3>
+            <div class="file-label">events/ready.py</div>
+            <pre><code class="language-python">from clientcord.declare import event
+
+@event("READY")
+async def on_ready(payload):
+    print(f"bot is online")</code></pre>
+
+            <h3>example: message create event</h3>
+            <div class="file-label">events/message.py</div>
+            <pre><code class="language-python">from clientcord.declare import event
+
+@event("MESSAGE_CREATE")
+async def on_message(payload):
+    content = payload.get("content", "")
+    author = payload.get("author", {}).get("username", "unknown")
+    print(f"{author}: {content}")</code></pre>
+
+            <h3>example: guild member add event</h3>
+            <div class="file-label">events/member_join.py</div>
+            <pre><code class="language-python">from clientcord.declare import event
+
+@event("GUILD_MEMBER_ADD")
+async def on_member_join(payload):
+    user = payload.get("user", {})
+    print(f"{user.get('username')} joined the server")</code></pre>
+
+            <div class="callout">events are auto-loaded from the <code>/events</code> folder. no manual registration
+                needed.</div>
 
             <h2>project structure</h2>
-            <p>after setup, your project should look like this:</p>
             <div class="tree">
                 commands/<br>
                 &nbsp;&nbsp;ping.py<br>
                 components/<br>
                 events/<br>
                 &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
                 cc_init.py<br>
                 bot.py
             </div>
 
             <div class="nav-footer">
-                <span></span>
-                <a href="configuring.html">next: configuring clientcord &rarr;</a>
+                <a href="first-command.html">&larr; prev: creating your first command</a>
+                <a href="command-options.html">next: command options &rarr;</a>
             </div>
 
             <footer>clientcord &copy; 2026</footer>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>clientcord - docs</title>
+    <title>creating your first command</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet"
@@ -33,53 +33,68 @@
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
-            <div class="sidebar-section">components</div>
+            <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
         </nav>
         <div class="main">
 
-            <h1>clientcord</h1>
-            <p>extremely fast. very low ram. fully typed. totally modular. decorator-driven discord framework for python
-                3.12+.</p>
+            <h1>creating your first command</h1>
+            <p>the main input for any discord bot is commands. clientcord will handle loading and executing all commands
+                you create inside the <code>/commands</code> folder.</p>
 
-            <h2>what is clientcord</h2>
-            <p>clientcord is a from-scratch discord bot framework that prioritizes performance and developer experience.
-                it uses decorator-driven architecture inspired by modern frameworks like fastapi and seyfert. it does
-                not imitate discord.py.</p>
+            <h2>step 1: create a command file</h2>
+            <p>all commands must use the <code>@command</code> decorator and a class with a <code>run</code> method.</p>
 
-            <h2>core libraries</h2>
-            <ul>
-                <li><code>msgspec</code> - fast json parsing and typed structs</li>
-                <li><code>aiosonic</code> - async http requests</li>
-                <li><code>websockets</code> - gateway connection</li>
-                <li><code>isal</code> - zlib decompression</li>
-                <li><code>uvloop</code> - fast event loop (linux only)</li>
-                <li><code>lmdb</code> - disk-backed cache for low ram</li>
-                <li><code>xxhash</code> - fast hashing</li>
-                <li><code>psutil</code> - memory tracking</li>
-            </ul>
+            <div class="file-label">commands/ping.py</div>
+            <pre><code class="language-python">from clientcord.declare import command
 
-            <h2>installation</h2>
+@command(name="ping", description="show bot latency")
+class PingCommand:
+    async def run(self, ctx):
+        await ctx.write("pong")</code></pre>
+
+            <div class="callout">since your <code>cc_init.py</code> has <code>commands = "/commands"</code>, this file
+                will be auto-loaded when the bot starts. you do not need to manually register it.</div>
+
+            <h2>step 2: run your bot</h2>
             <div class="file-label">terminal</div>
-            <pre><code class="language-bash">pip install msgspec aiosonic websockets isal uvloop aiodns lmdb xxhash colorama psutil</code></pre>
+            <pre><code class="language-bash">python bot.py</code></pre>
+
+            <p>when the bot starts, clientcord compiles execution plans for all commands and connects to discord. you
+                should see the <code>/ping</code> command available on your server.</p>
+
+            <h2>using options</h2>
+            <p>commands can accept user inputs through options. use the <code>@options</code> decorator and option
+                constructors.</p>
+
+            <div class="file-label">commands/ping.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+from clientcord.commands.options import boolean_option
+
+@options(
+    hide=boolean_option(description="hide the response")
+)
+@command(name="ping", description="show bot latency")
+class PingCommand:
+    async def run(self, ctx, hide: bool = False):
+        await ctx.write("pong")</code></pre>
 
             <h2>project structure</h2>
-            <p>after setup, your project should look like this:</p>
+            <p>your project should now look like this:</p>
             <div class="tree">
                 commands/<br>
                 &nbsp;&nbsp;ping.py<br>
                 components/<br>
                 events/<br>
-                &nbsp;&nbsp;ready.py<br>
                 cc_init.py<br>
                 bot.py
             </div>
 
             <div class="nav-footer">
-                <span></span>
-                <a href="configuring.html">next: configuring clientcord &rarr;</a>
+                <a href="configuring.html">&larr; prev: configuring clientcord</a>
+                <a href="events.html">next: listening to events &rarr;</a>
             </div>
 
             <footer>clientcord &copy; 2026</footer>

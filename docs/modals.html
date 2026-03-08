@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>modals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+        </nav>
+        <div class="main">
+
+            <h1>modals</h1>
+            <p>modals are popup forms that request structured input from users. they can contain text inputs, select
+                menus, and static text. all interactive components inside a modal must be wrapped in a
+                <code>Label</code>.</p>
+
+            <h2>creating a modal</h2>
+            <div class="file-label">basic modal structure</div>
+            <pre><code class="language-python">from clientcord.components import Modal
+
+modal = (
+    Modal()
+    .set_title("my modal")
+    .set_custom_id("my_first_modal")
+    .set_components([])
+)</code></pre>
+
+            <p>each interactive component must be wrapped in a <code>Label</code>:</p>
+            <div class="file-label">wrapping with a label</div>
+            <pre><code class="language-python">from clientcord.components import Label
+
+label = (
+    Label()
+    .set_label("some field")
+    .set_component(my_component)
+)</code></pre>
+
+            <h2>1. text input modal</h2>
+            <p>the classic discord modal with a text field.</p>
+
+            <div class="file-label">text input modal</div>
+            <pre><code class="language-python">from clientcord.components import Modal, Label, TextInput, TextInputStyle
+
+text_input = (
+    TextInput()
+    .set_custom_id("feedback")
+    .set_style(TextInputStyle.paragraph)
+    .set_placeholder("write your feedback here...")
+    .set_length(min=10, max=500)
+    .set_required(True)
+)
+
+label = (
+    Label()
+    .set_label("what did you think?")
+    .set_description("give us as much detail as possible")
+    .set_component(text_input)
+)
+
+modal = (
+    Modal()
+    .set_title("feedback form")
+    .set_custom_id("feedback_modal")
+    .set_components([label])
+)</code></pre>
+
+            <h3>sending the modal</h3>
+            <div class="file-label">sending from a command</div>
+            <pre><code class="language-python">await interaction.modal(modal)</code></pre>
+
+            <h2>2. static text in modal</h2>
+            <p>use <code>TextDisplay</code> to show read-only text inside a modal.</p>
+
+            <div class="file-label">text display in modal</div>
+            <pre><code class="language-python">from clientcord.components import Modal, TextDisplay
+
+text = TextDisplay().set_id(1).set_content("read these rules before continuing")
+
+modal = (
+    Modal()
+    .set_title("rules")
+    .set_custom_id("rules_modal")
+    .set_components([text])
+)</code></pre>
+
+            <h2>3. string select menu modal</h2>
+            <div class="file-label">string select in modal</div>
+            <pre><code class="language-python">from clientcord.components import (
+    Modal, Label, StringSelectMenu, StringSelectOption
+)
+
+menu = (
+    StringSelectMenu()
+    .set_custom_id("color")
+    .set_options([
+        StringSelectOption().set_label("red").set_value("red"),
+        StringSelectOption().set_label("blue").set_value("blue"),
+    ])
+)
+
+label = Label().set_label("pick a color").set_component(menu)
+
+modal = (
+    Modal()
+    .set_title("color picker")
+    .set_custom_id("color_modal")
+    .set_components([label])
+)</code></pre>
+
+            <h2>4. role select menu modal</h2>
+            <div class="file-label">role select in modal</div>
+            <pre><code class="language-python">from clientcord.components import Modal, Label, RoleSelectMenu
+
+menu = RoleSelectMenu().set_custom_id("role")
+label = Label().set_label("choose a role").set_component(menu)
+
+modal = (
+    Modal()
+    .set_title("role picker")
+    .set_custom_id("role_modal")
+    .set_components([label])
+)</code></pre>
+
+            <h2>5. channel select menu modal</h2>
+            <div class="file-label">channel select in modal</div>
+            <pre><code class="language-python">from clientcord.components import Modal, Label, ChannelSelectMenu
+
+menu = ChannelSelectMenu().set_custom_id("channel")
+label = Label().set_label("choose a channel").set_component(menu)
+
+modal = (
+    Modal()
+    .set_title("channel picker")
+    .set_custom_id("channel_modal")
+    .set_components([label])
+)</code></pre>
+
+            <h2>6. user select menu modal</h2>
+            <div class="file-label">user select in modal</div>
+            <pre><code class="language-python">from clientcord.components import Modal, Label, UserSelectMenu
+
+menu = UserSelectMenu().set_custom_id("user")
+label = Label().set_label("choose a user").set_component(menu)
+
+modal = (
+    Modal()
+    .set_title("user picker")
+    .set_custom_id("user_modal")
+    .set_components([label])
+)</code></pre>
+
+            <h2>7. mentionable select menu modal</h2>
+            <div class="file-label">mentionable select in modal</div>
+            <pre><code class="language-python">from clientcord.components import Modal, Label, MentionableSelectMenu
+
+menu = MentionableSelectMenu().set_custom_id("mention")
+label = Label().set_label("choose a mentionable").set_component(menu)
+
+modal = (
+    Modal()
+    .set_title("mentionable picker")
+    .set_custom_id("mention_modal")
+    .set_components([label])
+)</code></pre>
+
+            <h2>handling modals</h2>
+            <p>modals are handled with the <code>ModalCommand</code> class. place these files in your
+                <code>/components</code> folder.</p>
+
+            <div class="file-label">components/feedback_handler.py</div>
+            <pre><code class="language-python">from clientcord.components import ModalCommand
+
+class FeedbackModal(ModalCommand):
+    def filter(self, ctx):
+        return ctx.custom_id == "feedback_modal"
+
+    async def run(self, ctx):
+        text = ctx.interaction.get_input_value("feedback")
+        await ctx.write({"content": f"your feedback: {text}"})</code></pre>
+
+            <div class="callout">modal handlers are auto-loaded from the <code>/components</code> folder alongside
+                component handlers. use the <code>filter</code> method to match the <code>custom_id</code> you set on
+                the modal.</div>
+
+            <h2>triggering modals from buttons</h2>
+            <p>you can open a modal when a user clicks a button by calling <code>interaction.modal()</code> inside your
+                component handler.</p>
+
+            <div class="file-label">components/open_modal_button.py</div>
+            <pre><code class="language-python">from clientcord.components import ComponentCommand, Modal, Label, TextInput, TextInputStyle
+
+class OpenModalButton(ComponentCommand):
+    component_type = "Button"
+
+    def filter(self, ctx):
+        return ctx.custom_id == "open_feedback"
+
+    async def run(self, ctx):
+        text_input = (
+            TextInput()
+            .set_custom_id("feedback")
+            .set_style(TextInputStyle.paragraph)
+            .set_placeholder("your thoughts...")
+        )
+
+        modal = (
+            Modal()
+            .set_title("feedback form")
+            .set_custom_id("feedback_modal")
+            .set_components([
+                Label().set_label("your feedback").set_component(text_input)
+            ])
+        )
+
+        await ctx.interaction.modal(modal)</code></pre>
+
+            <div class="nav-footer">
+                <a href="handling-components.html">&larr; prev: handling components</a>
+                <span></span>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

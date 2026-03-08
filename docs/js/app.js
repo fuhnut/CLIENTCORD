@@ -1,21 +1,12 @@
-tailwind.config = {
-    theme: {
-        extend: {
-            fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-                mono: ['"JetBrains Mono"', 'monospace'],
-            },
-            colors: {
-                discord: '#5865F2',
-                dark: '#0f172a',
-                card: 'rgba(30, 41, 59, 0.7)'
-            }
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('pre code').forEach((el) => {
         hljs.highlightElement(el);
+    });
+
+    const current = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.sidebar-link').forEach((link) => {
+        if (link.getAttribute('href') === current) {
+            link.classList.add('active');
+        }
     });
 });
