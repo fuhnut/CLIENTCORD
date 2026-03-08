@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clientcord</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body class="antialiased selection:bg-discord selection:text-white pb-20 lowercase font-medium">
+
+    <nav class="navbar navbar-expand-lg border-b border-white/10 sticky-top bg-[#0f172a]/80 backdrop-blur-md">
+        <div class="container-fluid px-6">
+            <a class="navbar-brand d-flex align-items-center gap-3 text-white fw-bold" href="#">
+                <img src="https://files.catbox.moe/zjxudh.png" alt="clientcord logo" width="40" height="40"
+                    class="logo-spin-hover rounded">
+                clientcord
+            </a>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto font-medium text-sm">
+                    <li class="nav-item">
+                        <a class="nav-link text-gray-300 hover:text-white transition-colors"
+                            href="#getting-started">getting started</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 pt-24 pb-16 text-center">
+        <div class="fade-in">
+            <img src="https://files.catbox.moe/zjxudh.png" alt="clientcord logo"
+                class="mx-auto w-32 h-32 mb-8 rounded-2xl shadow-[0_0_40px_rgba(88,101,242,0.4)]">
+            <h1
+                class="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">
+                clientcord framework
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-10 font-light leading-relaxed">
+                extremely fast. very low ram. fully typed. totally modular.
+            </p>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 max-w-5xl">
+
+        <section id="installation" class="mb-20 fade-in delay-2">
+            <h2 class="text-3xl font-bold mb-6 text-white border-b border-slate-700 pb-2">installation</h2>
+            <div class="glass-panel p-6">
+                <p class="text-slate-300 mb-4">run this to install all needed deps.</p>
+                <div class="position-relative">
+                    <pre><code class="language-bash">pip install clientcord msgspec aiosonic websockets isal uvloop aiodns lmdb xxhash colorama psutil</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="getting-started" class="mb-20 fade-in delay-3">
+            <h2 class="text-3xl font-bold mb-6 text-white border-b border-slate-700 pb-2">creating a bot - step by step
+            </h2>
+
+            <p class="text-slate-300 mb-4 font-light">
+                step 1: make a config file named <code
+                    class="bg-slate-800 px-2 py-1 rounded text-sm text-pink-300 font-mono">cc_init.py</code> so
+                clientcord can pick up your token and intents.
+            </p>
+            <div class="glass-panel overflow-hidden mb-6 mt-2">
+                <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center gap-2">
+                    <span class="text-slate-500 text-sm font-mono">cc_init.py</span>
+                </div>
+                <div class="p-4 bg-[#111827]">
+                    <pre><code class="language-python">from clientcord.intents import Intents
+
+token = "your bot token goes here"
+intents = Intents.default()
+prefix = "!"
+</code></pre>
+                </div>
+            </div>
+
+            <p class="text-slate-300 mb-4 font-light">
+                step 2: make your main script file named <code
+                    class="bg-slate-800 px-2 py-1 rounded text-sm text-pink-300 font-mono">bot.py</code>. imports must
+                be highly modular as shown. you must import individual files instead of blanket imports.
+            </p>
+
+            <div class="glass-panel overflow-hidden mb-6">
+                <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center gap-2">
+                    <span class="text-slate-500 text-sm font-mono">bot.py</span>
+                </div>
+                <div class="p-4 bg-[#111827]">
+                    <pre><code class="language-python">from clientcord.client import Client
+from clientcord.declare import command, event
+
+client = Client()
+
+@command(name="ping", description="ping command")
+class Ping:
+    async def run(self, ctx):
+        await ctx.write("pong")
+
+@event("MESSAGE_CREATE")
+async def on_message(message):
+    print("message received")
+
+client.load_component(Ping)
+client.load_component(on_message)
+
+if __name__ == "__main__":
+    client.run()
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="commands" class="mb-20 fade-in delay-3">
+            <h2 class="text-3xl font-bold mb-6 text-white border-b border-slate-700 pb-2">making commands</h2>
+            <p class="text-slate-300 mb-4 font-light">
+                step 3: use options decorators to pass user inputs tightly into your parameters.
+            </p>
+
+            <div class="glass-panel overflow-hidden mb-6">
+                <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center gap-2">
+                    <span class="text-slate-500 text-sm font-mono">commands context</span>
+                </div>
+                <div class="p-4 bg-[#111827]">
+                    <pre><code class="language-python">from clientcord.declare import command, options
+import clientcord.commands.options as opt
+from clientcord.models import User
+
+@options(
+    user=opt.user(description="target user", required=True),
+    reason=opt.string(description="reason for ban", required=False)
+)
+@command(name="ban")
+class BanCommand:
+    async def run(self, ctx, user: User, reason: str = None):
+        await ctx.write(f"banned {user.id} for {reason}")
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="middleware" class="mb-20 fade-in delay-3">
+            <h2 class="text-3xl font-bold mb-6 text-white border-b border-slate-700 pb-2">using middlewares</h2>
+            <p class="text-slate-300 mb-4 font-light">
+                step 4: define logic block filters to stop abusive requests before they reach your command logic.
+            </p>
+
+            <div class="glass-panel overflow-hidden mb-6">
+                <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center gap-2">
+                    <span class="text-slate-500 text-sm font-mono">middlewares rules</span>
+                </div>
+                <div class="p-4 bg-[#111827]">
+                    <pre><code class="language-python">from clientcord.declare import middleware
+from clientcord.declare import command
+
+@middleware("is_developer")
+async def is_dev(ctx, next_mw, stop):
+    if ctx.user.id != "my_id":
+        return stop("unauthorized")
+    await next_mw()
+
+@command(name="shutdown")
+@is_dev
+class Shutdown:
+    async def run(self, ctx):
+        await ctx.write("shutting down")
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="border-t border-white/10 mt-12 py-8 bg-slate-900/50">
+        <div class="container mx-auto px-4 text-center text-slate-500 text-sm">
+            clientcord framework
+            <br>
+            clientcord &copy; 2026
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

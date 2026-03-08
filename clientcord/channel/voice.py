@@ -1,0 +1,2 @@
+class VoiceChannel:
+    pass
