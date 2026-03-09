@@ -27,43 +27,79 @@
             <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
             <a class="sidebar-link" href="first-command.html">creating your first command</a>
             <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
             <div class="sidebar-section">commands</div>
             <a class="sidebar-link" href="command-options.html">command options</a>
             <a class="sidebar-link" href="middlewares.html">command middlewares</a>
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
             <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
         </nav>
         <div class="main">
 
             <h1>creating your first command</h1>
-            <p>the main input for any discord bot is commands. clientcord will handle loading and executing all commands
-                you create inside the <code>/commands</code> folder.</p>
+            <p>commands are how users interact with your bot. clientcord makes it super easy to create "Slash Commands"
+                (the ones that pop up when you type <code>/</code>).</p>
 
-            <h2>step 1: create a command file</h2>
-            <p>all commands must use the <code>@command</code> decorator and a class with a <code>run</code> method.</p>
+            <h2>Step 1: Create the Command File</h2>
+            <p>think of a command name, like <code>/ping</code>. create a file named <code>ping.py</code> inside your
+                <code>/commands</code> folder.
+            </p>
 
             <div class="file-label">commands/ping.py</div>
             <pre><code class="language-python">from clientcord.declare import command
 
-@command(name="ping", description="show bot latency")
+# The name is what users type, description is what they see
+@command(name="ping", description="is the bot alive?")
 class PingCommand:
+    # This runs whenever someone uses the command
     async def run(self, ctx):
-        await ctx.write("pong")</code></pre>
+        # Sends a message back to the user
+        await ctx.write("pong! 🏓")</code></pre>
 
-            <div class="callout">since your <code>cc_init.py</code> has <code>commands = "/commands"</code>, this file
-                will be auto-loaded when the bot starts. you do not need to manually register it.</div>
+            <div class="callout"><b>Remember:</b> because you set <code>commands = "/commands"</code> in your config,
+                clientcord finds this file automatically!</div>
 
-            <h2>step 2: run your bot</h2>
+            <h2>Step 2: Telling Discord about the Command</h2>
+            <p>discord needs to know your command exists. we do this by "syncing". the best way is to do it once when
+                the bot starts up.</p>
+
+            <div class="file-label">events/ready.py</div>
+            <pre><code class="language-python">from clientcord.declare import event
+# We import the client we created in bot.py
+from bot import client 
+
+@event("READY")
+async def on_ready(payload):
+    print(f"Logged in as {payload['user']['username']}")
+    
+    # This 'pushes' your commands to discord
+    await client.sync_commands()
+    print("Commands synced!")</code></pre>
+
+            <h2>step 3: run your bot</h2>
             <div class="file-label">terminal</div>
             <pre><code class="language-bash">python bot.py</code></pre>
 
-            <p>when the bot starts, clientcord compiles execution plans for all commands and connects to discord. you
-                should see the <code>/ping</code> command available on your server.</p>
+            <p>when the bot starts, clientcord compiles execution plans for all commands, connects to discord, and
+                <code>sync_commands()</code> pushes the slash command metadata API payload out. you
+                should see the <code>/ping</code> command available on your server!
+            </p>
 
             <h2>using options</h2>
             <p>commands can accept user inputs through options. use the <code>@options</code> decorator and option
@@ -82,12 +118,15 @@ class PingCommand:
         await ctx.write("pong")</code></pre>
 
             <h2>project structure</h2>
-            <p>your project should now look like this:</p>
+            <p>your project should look exactly like this now:</p>
             <div class="tree">
                 commands/<br>
                 &nbsp;&nbsp;ping.py<br>
                 components/<br>
                 events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
                 cc_init.py<br>
                 bot.py
             </div>

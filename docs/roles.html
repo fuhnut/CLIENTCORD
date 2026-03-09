@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>roles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>roles</h1>
+            <p>roles manage permissions, colors, and hierarchical access within a guild. clientcord allows you to manage
+                roles easily, using native python arrays for setting detailed permissions.</p>
+
+            <h2>creating roles</h2>
+            <p>you can create roles using human-readable string literals for the permissions argument.</p>
+
+            <div class="file-label">creating a new role</div>
+            <pre><code class="language-python"># The permissions argument fully supports an array of strings
+await ctx.guild.create_role(
+    name="Moderator",
+    color=0x3498db, # Hexadecimal integer for colors
+    hoist=True, # Display role separately in members list
+    mentionable=True,
+    permissions=["manage_messages", "kick_members", "ban_members"]
+)</code></pre>
+
+            <h2>assigning roles</h2>
+            <p>easily provide a role to a <code>Member</code> object from your command interactions.</p>
+
+            <div class="file-label">assigning a role</div>
+            <pre><code class="language-python">target_member = ctx.guild.get_member("user_id")
+
+# you can pass the role ID directly
+await target_member.add_role("1234567890", reason="passed verification")
+
+# or pass the human-readable role name (clientcord dynamically resolves it to the ID!)
+await target_member.add_role("Moderator", reason="passed verification")</code></pre>
+
+            <div class="file-label">removing a role</div>
+            <pre><code class="language-python">await target_member.remove_role("Moderator", reason="punishment")</code></pre>
+
+            <h2>role properties</h2>
+            <ul>
+                <li><code>id</code> - the role id</li>
+                <li><code>name</code> - the role name</li>
+                <li><code>color</code> - integer representation of hexadecimal code</li>
+                <li><code>hoist</code> - if this role is pinned separately</li>
+                <li><code>permissions</code> - the permission bit set</li>
+                <li><code>mentionable</code> - whether the role is taggable</li>
+            </ul>
+
+            <h2>project structure</h2>
+            <p>to keep things organized, your project should follow this structure:</p>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                components/<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
+            <div class="nav-footer">
+                <a href="messages.html">&larr; prev: messages</a>
+                <a href="users.html">next: users &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

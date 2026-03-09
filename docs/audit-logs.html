@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>audit logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>audit logs</h1>
+            <p>audit logs record every administrative action in a guild. entries are stored for 45 days
+                and require the <code>VIEW_AUDIT_LOG</code> permission to read.</p>
+
+            <h2>fetching audit logs</h2>
+            <p>use <code>get_guild_audit_log</code> to fetch entries. you can filter by user, action
+                type, and paginate with before/after.</p>
+
+            <div class="file-label">get recent audit log entries</div>
+            <pre><code class="language-python">logs = await ctx.guild.fetch_audit_logs()</code></pre>
+
+            <div class="file-label">filter by user and action</div>
+            <pre><code class="language-python">from clientcord.models import AuditLogEvent
+
+# get only kick actions
+logs = await ctx.guild.fetch_audit_logs(
+    action_type=AuditLogEvent.member_kick,
+    limit=10
+)</code></pre>
+
+            <h2>audit log events</h2>
+            <p>the <code>AuditLogEvent</code> class holds all event type values. here are the most common ones:</p>
+
+            <div class="file-label">common events</div>
+            <pre><code class="language-python">from clientcord.models import AuditLogEvent
+
+AuditLogEvent.channel_create      # 10
+AuditLogEvent.channel_update      # 11
+AuditLogEvent.channel_delete      # 12
+AuditLogEvent.member_kick         # 20
+AuditLogEvent.member_ban_add      # 22
+AuditLogEvent.member_ban_remove   # 23
+AuditLogEvent.member_update       # 24
+AuditLogEvent.member_role_update  # 25
+AuditLogEvent.role_create         # 30
+AuditLogEvent.role_update         # 31
+AuditLogEvent.role_delete         # 32
+AuditLogEvent.message_delete      # 72
+AuditLogEvent.message_bulk_delete # 73
+AuditLogEvent.emoji_create        # 60
+AuditLogEvent.webhook_create      # 50
+AuditLogEvent.invite_create       # 40</code></pre>
+
+            <h2>audit log entry structure</h2>
+            <p>each entry has these fields:</p>
+            <ul>
+                <li><code>id</code> - unique entry id</li>
+                <li><code>action_type</code> - the event type (integer)</li>
+                <li><code>target_id</code> - id of the affected entity</li>
+                <li><code>user_id</code> - who performed the action</li>
+                <li><code>changes</code> - list of what changed</li>
+                <li><code>options</code> - extra info for certain events</li>
+                <li><code>reason</code> - audit log reason (1-512 chars)</li>
+            </ul>
+
+            <h2>reading changes</h2>
+            <p>the <code>changes</code> array contains objects with <code>key</code>,
+                <code>old_value</code>, and <code>new_value</code> fields.
+            </p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">logs = await ctx.guild.fetch_audit_logs(
+    user_id="123456789" # the user who performed the actions
+)</code></pre> entry in logs["audit_log_entries"]:
+            for change in entry.get("changes", []):
+            key = change["key"]
+            old = change.get("old_value")
+            new = change.get("new_value")
+            print(f"{key}: {old} -> {new}")</code></pre>
+
+            <h2>audit log reason</h2>
+            <p>when your bot performs an action, pass a <code>reason</code> parameter to include it in
+                the audit log. this works on any endpoint that supports <code>X-Audit-Log-Reason</code>.</p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.channel.delete(reason="no longer needed")
+await ctx.channel.edit({"name": "renamed"}, reason="cleanup")
+await ctx.guild.create_emoji(payload, reason="new emoji")</code></pre>
+
+            <h2>models</h2>
+            <div class="file-label">import audit log models</div>
+            <pre><code class="language-python">from clientcord.models import (
+    AuditLog, AuditLogEntry, AuditLogChange,
+    AuditLogEvent, OptionalAuditEntryInfo,
+)</code></pre>
+
+            <div class="nav-footer">
+                <a href="channels.html">&larr; prev: channels</a>
+                <a href="auto-moderation.html">next: auto moderation &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

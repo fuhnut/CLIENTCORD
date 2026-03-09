@@ -98,8 +98,8 @@ class StringSelectMenu:
         self._data["placeholder"] = placeholder
         return self
 
-    def set_options(self, options: list[StringSelectOption]) -> StringSelectMenu:
-        self._data["options"] = [o.to_dict() for o in options]
+    def set_options(self, options: list[Any]) -> StringSelectMenu:
+        self._data["options"] = [o.to_dict() if hasattr(o, "to_dict") else o for o in options]
         return self
 
     def set_min_values(self, min_values: int) -> StringSelectMenu:
@@ -230,6 +230,10 @@ class TextInput:
         self._data["style"] = style
         return self
 
+    def set_label(self, label: str) -> TextInput:
+        self._data["label"] = label
+        return self
+
     def set_placeholder(self, placeholder: str) -> TextInput:
         self._data["placeholder"] = placeholder
         return self
@@ -346,12 +350,12 @@ class ActionRow:
         self._data: dict[str, Any] = {"type": ComponentType.action_row, "components": []}
 
     def set_components(self, components: list[Any]) -> ActionRow:
-        self._data["components"] = [c.to_dict() for c in components]
+        self._data["components"] = [c.to_dict() if hasattr(c, "to_dict") else c for c in components]
         return self
 
     def add_components(self, *components: Any) -> ActionRow:
         for c in components:
-            self._data["components"].append(c.to_dict())
+            self._data["components"].append(c.to_dict() if hasattr(c, "to_dict") else c)
         return self
 
     def to_dict(self) -> dict[str, Any]:
@@ -363,11 +367,11 @@ class Section:
         self._data: dict[str, Any] = {"type": ComponentType.section, "components": []}
 
     def set_components(self, components: list[Any]) -> Section:
-        self._data["components"] = [c.to_dict() for c in components]
+        self._data["components"] = [c.to_dict() if hasattr(c, "to_dict") else c for c in components]
         return self
 
     def set_accessory(self, accessory: Any) -> Section:
-        self._data["accessory"] = accessory.to_dict()
+        self._data["accessory"] = accessory.to_dict() if hasattr(accessory, "to_dict") else accessory
         return self
 
     def to_dict(self) -> dict[str, Any]:
@@ -379,7 +383,7 @@ class Container:
         self._data: dict[str, Any] = {"type": ComponentType.container, "components": []}
 
     def set_components(self, components: list[Any]) -> Container:
-        self._data["components"] = [c.to_dict() for c in components]
+        self._data["components"] = [c.to_dict() if hasattr(c, "to_dict") else c for c in components]
         return self
 
     def set_accent_color(self, color: int) -> Container:
@@ -407,7 +411,7 @@ class Label:
         return self
 
     def set_component(self, component: Any) -> Label:
-        self._data["component"] = component.to_dict()
+        self._data["component"] = component.to_dict() if hasattr(component, "to_dict") else component
         return self
 
     def to_dict(self) -> dict[str, Any]:
@@ -427,7 +431,7 @@ class Modal:
         return self
 
     def set_components(self, components: list[Any]) -> Modal:
-        self._data["components"] = [c.to_dict() for c in components]
+        self._data["components"] = [c.to_dict() if hasattr(c, "to_dict") else c for c in components]
         return self
 
     def to_dict(self) -> dict[str, Any]:

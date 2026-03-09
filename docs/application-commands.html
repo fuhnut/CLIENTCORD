@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>application commands - clientcord</title>
+    <link href="css/tailwind.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/atom-one-dark.min.css" rel="stylesheet">
+    <script src="js/highlight.min.js"></script>
+</head>
+
+<body class="bg-gray-900 text-gray-200 font-sans antialiased min-h-screen flex flex-col">
+
+    <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white shadow-lg">
+                    c</div>
+                <h1 class="text-xl font-bold tracking-tight text-white">clientcord <span
+                        class="text-xs text-gray-400 font-normal">v1.0.0</span></h1>
+            </div>
+            <nav class="hidden md:flex gap-6 text-sm font-medium">
+                <a href="index.html" class="text-gray-300 hover:text-white transition-colors">documentation</a>
+                <a href="https://github.com/fuhnut/CLIENTCORD"
+                    class="text-gray-300 hover:text-white transition-colors">github</a>
+            </nav>
+        </div>
+    </header>
+
+    <div
+        class="container mx-auto flex-1 flex flex-col md:flex-row shadow-lg mt-4 bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700/50">
+
+        <aside class="w-full md:w-64 bg-gray-900 border-r border-gray-700 overflow-y-auto hidden md:block"
+            style="height: calc(100vh - 100px);">
+            <div class="p-6 space-y-8">
+                <div>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">getting started</h3>
+                    <div class="flex flex-col gap-2">
+                        <a href="index.html" class="nav-link">introduction</a>
+                        <a href="configuring.html" class="nav-link">configuring clientcord</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">basics</h3>
+                    <div class="flex flex-col gap-2">
+                        <a href="first-command.html" class="nav-link">creating your first command</a>
+                        <a href="events.html" class="nav-link">listening to events</a>
+                        <a href="complete-bot.html" class="nav-link">complete bot example</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">advanced</h3>
+                    <div class="flex flex-col gap-2">
+                        <a href="command-options.html" class="nav-link">command options</a>
+                        <a href="middlewares.html" class="nav-link">command middlewares</a>
+                        <a href="subcommands.html" class="nav-link">sub commands</a>
+                        <a href="error-handling.html" class="nav-link">error handling</a>
+                        <a href="prefix-commands.html" class="nav-link">prefix commands</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">components</h3>
+                    <div class="flex flex-col gap-2">
+                        <a href="components.html" class="nav-link">building components</a>
+                        <a href="handling-components.html" class="nav-link">handling components</a>
+                        <a href="modals.html" class="nav-link">modals</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">resources</h3>
+                    <div class="flex flex-col gap-2">
+                        <a href="guilds.html" class="nav-link">guilds</a>
+                        <a href="channels.html" class="nav-link">channels</a>
+                        <a href="messages.html" class="nav-link">messages</a>
+                        <a href="roles.html" class="nav-link">roles</a>
+                        <a href="users.html" class="nav-link">users</a>
+                        <a href="webhooks.html" class="nav-link">webhooks</a>
+                        <a href="audit-logs.html" class="nav-link">audit logs</a>
+                        <a href="auto-moderation.html" class="nav-link">auto moderation</a>
+                        <a href="emoji.html" class="nav-link">emoji</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 lg:p-12 overflow-y-auto" style="height: calc(100vh - 100px);">
+            <div class="max-w-4xl mx-auto space-y-12">
+
+                <section>
+                    <h2 class="text-3xl font-extrabold text-white mb-4 tracking-tight">application commands</h2>
+                    <p class="text-gray-300 leading-relaxed mb-6 font-medium text-lg">
+                        clientcord allows you to manage application commands globally or directly in a guild. these
+                        commands display directly in the user's interface, allowing inputs, sub-commands, and options.
+                    </p>
+                </section>
+
+                <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <h3 class="text-xl font-bold text-white mb-4">fetching global commands</h3>
+                    <p class="text-gray-300 mb-4 whitespace-pre-line text-sm">
+                        getting a list of all your global application commands is easy using the http client directly.
+                    </p>
+                    <div class="code-block-wrapper">
+                        <pre><code class="language-python">from clientcord import Client
+
+client = Client(token="bot_token")
+
+async def get_commands():
+    # Application ID is fetched seamlessly behind the scenes
+    commands = await client.get_global_commands()
+    print(commands)</code></pre>
+                    </div>
+                </section>
+
+                <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <h3 class="text-xl font-bold text-white mb-4">bulk overwriting commands</h3>
+                    <p class="text-gray-300 mb-4 whitespace-pre-line text-sm">
+                        to sync all of your application commands at once to discord, use the bulk overwrite method.
+                    </p>
+                    <div class="code-block-wrapper">
+                        <pre><code class="language-python">async def sync_commands():
+    synced = await client.sync_commands("123456789") # Assuming testing guild ID
+    # Use client.sync_commands() internally since it builds the payload natively now
+    print("synced global commands!")</code></pre>
+                    </div>
+                </section>
+
+                <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <h3 class="text-xl font-bold text-white mb-4">guild application commands</h3>
+                    <p class="text-gray-300 mb-4 whitespace-pre-line text-sm">
+                        guild commands update instantly compared to global ones. sync them the exact same way but supply
+                        the guild id!
+                    </p>
+                    <div class="code-block-wrapper">
+                        <pre><code class="language-python">async def sync_guild_commands():
+    guild_id = "123456789"
+    
+    synced = await client.sync_commands(guild_id)
+    print("synced guild-specific commands!")</code></pre>
+                    </div>
+                </section>
+
+                <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <h3 class="text-xl font-bold text-white mb-4">creating & deleting single commands</h3>
+                    <p class="text-gray-300 mb-4 whitespace-pre-line text-sm">
+                        you can also manage commands one by one.
+                    </p>
+                    <div class="code-block-wrapper">
+                        <pre><code class="language-python">async def manage_command():
+    new_cmd = await client.create_global_command(
+        name="hello",
+        description="says hello",
+        type=1
+    )
+    
+    command_id = new_cmd["id"]
+    
+    await client.edit_global_command(
+        command_id, 
+        description="says hello loudly"
+    )
+    
+    await client.delete_global_command(command_id)</code></pre>
+                    </div>
+                </section>
+
+                <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <h3 class="text-xl font-bold text-white mb-4">defining permissions</h3>
+                    <p class="text-gray-300 mb-4 whitespace-pre-line text-sm">
+                        with clientcord, you don't need to manually calculate bitwise integers to define required
+                        permissions. instead, you can simply pass an array of intuitive strings. this works directly in
+                        the decorator!
+                    </p>
+                    <div class="code-block-wrapper">
+                        <pre><code class="language-python">from clientcord.declare import command
+
+@command(
+    name="ban",
+    description="bans a user",
+    default_member_permissions=["ban_members"],
+    bot_permissions=["ban_members", "send_messages"]
+)
+class BanCommand:
+    async def run(self, ctx):
+        await ctx.write("user banned!")</code></pre>
+                    </div>
+                </section>
+
+                <section class="bg-blue-900/40 p-6 rounded-lg border border-blue-800/60 shadow-inner">
+                    <h3 class="text-lg font-bold text-blue-300 mb-2">command models</h3>
+                    <p class="text-blue-100/80 text-sm whitespace-pre-line leading-relaxed">
+                        clientcord fully implements discord application command structures internally such as <code
+                            class="bg-blue-950/50 px-1 py-0.5 rounded text-blue-200">ApplicationCommand</code>, <code
+                            class="bg-blue-950/50 px-1 py-0.5 rounded text-blue-200">ApplicationCommandOption</code>,
+                        and <code
+                            class="bg-blue-950/50 px-1 py-0.5 rounded text-blue-200">ApplicationCommandOptionChoice</code>
+                        using strict <code
+                            class="bg-blue-950/50 px-1 py-0.5 rounded text-blue-200">msgspec.Struct</code> types for
+                        maximum performance.
+                    </p>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>hljs.highlightAll();</script>
+</body>
+
+</html>

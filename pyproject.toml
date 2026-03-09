@@ -11,7 +11,7 @@ dependencies = [
     "aiosonic",
     "websockets",
     "isal",
-    "uvloop",
+    "uvloop; sys_platform != 'win32'",
     "aiodns",
     "lmdb",
     "xxhash",

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>messages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>messages</h1>
+            <p>messages represent interactions in text, threads, or dms. clientcord abstracts the complexity with the
+                <code>Message</code> model and the unified <code>ctx.write()</code> capability.
+            </p>
+
+            <h2>sending messages</h2>
+            <p>whether you're working with prefix commands or application interactions, just use
+                <code>ctx.write()</code>. it will automatically format a message or webhooks reply.
+            </p>
+
+            <div class="file-label">standard text response</div>
+            <pre><code class="language-python">await ctx.write("hello, world!")</code></pre>
+
+            <div class="file-label">replying with embeds and components</div>
+            <pre><code class="language-python">from clientcord.components import ActionRow, Button
+
+# Components passed to write() are natively converted internally!
+row = ActionRow().add_components(
+    Button().set_label("Click").set_custom_id("btn")
+)
+
+await ctx.write(
+    content="hello with a button!",
+    components=[row]
+)</code></pre>
+
+            <h2>ephemeral messages</h2>
+            <p>ephemeral messages are visible only to the person who triggered the command interaction.</p>
+            <div class="file-label">ephemeral response</div>
+            <pre><code class="language-python"># The 'flags' argument takes bitwise integers or list of string properties 
+await ctx.write("this is a secret message only you can see!", flags=64)</code></pre>
+
+            <h2>managing existing messages</h2>
+            <p>if you need to manipulate messages inside arbitrary channels, you can leverage the channel object.</p>
+
+            <div class="file-label">editing / deleting</div>
+            <pre><code class="language-python">channel = await ctx.client.get_channel("123456789")
+
+# Fetch target message
+target_message_id = "987654321"
+
+# Delete a message
+await channel.delete_message(target_message_id)
+
+# Edit a message
+await channel.edit_message(target_message_id, content="new updated text")</code></pre>
+
+            <h2>message model properties</h2>
+            <ul>
+                <li><code>id</code> - the message id</li>
+                <li><code>channel_id</code> - the channel id where the message exists</li>
+                <li><code>author</code> - the User model belonging to the sender</li>
+                <li><code>content</code> - raw string content of the message</li>
+                <li><code>embeds</code> - list of embed elements attached</li>
+            </ul>
+
+            <div class="nav-footer">
+                <a href="channels.html">&larr; prev: channels</a>
+                <a href="roles.html">next: roles &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

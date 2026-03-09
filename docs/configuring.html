@@ -27,93 +27,110 @@
             <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
             <a class="sidebar-link" href="first-command.html">creating your first command</a>
             <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
             <div class="sidebar-section">commands</div>
             <a class="sidebar-link" href="command-options.html">command options</a>
             <a class="sidebar-link" href="middlewares.html">command middlewares</a>
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
             <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
         </nav>
         <div class="main">
 
             <h1>configuring clientcord</h1>
             <p>clientcord is set up to automatically load your commands, events, and components from directories you
-                specify.</p>
+                specify. it's like magic!</p>
 
-            <h2>creating the config file</h2>
-            <p>create a file called <code>cc_init.py</code> in the root of your project. this is where clientcord picks
-                up your token, intents, prefix, and folder locations.</p>
+            <h2>Step 1: Get your Bot Token</h2>
+            <p>you can't start your bot without a secret token from discord. here's how to get it:</p>
+            <ol>
+                <li>Go to the <a href="https://discord.com/developers/applications" target="_blank">Discord Developer
+                        Portal</a>.</li>
+                <li>Create a "New Application" and give it a name.</li>
+                <li>Click <b>Bot</b> in the sidebar.</li>
+                <li>Click <b>Reset Token</b> (or Copy) to get your secret token. <b>Never share this with anyone!</b>
+                </li>
+            </ol>
+
+            <h2>Step 2: Create cc_init.py</h2>
+            <p>this is your bot's brain. create a file called <code>cc_init.py</code> in your project root.</p>
 
             <div class="file-label">cc_init.py</div>
             <pre><code class="language-python">from clientcord.intents import Intents
 
+# Paste your token here!
 token = "your-bot-token-here"
+
+# This tells discord what your bot is allowed to see
 intents = Intents.default()
+
+# The prefix for old-school commands (like !ping)
 prefix = "!"
 
-commands = "/commands"
-components = "/components"
-events = "/events"</code></pre>
+# Where clientcord should look for your code
+commands = "/commands"    # Folder for slash commands
+components = "/components" # Folder for buttons/modals
+events = "/events"       # Folder for events like join/leave</code></pre>
 
-            <div class="callout">the <code>commands</code>, <code>components</code>, and <code>events</code> fields tell
-                clientcord which folders to auto-load python files from at startup. every <code>.py</code> file inside
-                those folders will be imported automatically.</div>
+            <div class="callout"><b>Pro-tip:</b> every <code>.py</code> file you put in those folders will be loaded
+                automatically. you don't even have to import them yourself!</div>
 
-            <h2>selecting the bot type</h2>
-            <p>clientcord supports the gateway (websocket) connection to discord. the gateway client handles all events
-                emitted by discord such as <code>MESSAGE_CREATE</code>, <code>INTERACTION_CREATE</code>,
-                <code>GUILD_CREATE</code>, <code>READY</code>, among others.
-            </p>
-            <p>the available events depend on the intents configured in your <code>cc_init.py</code>.</p>
-
-            <h2>intents</h2>
-            <p>intents use python's <code>IntFlag</code> for type-safe bitwise operations. here are the available
-                methods:</p>
-
-            <div class="file-label">intents usage</div>
-            <pre><code class="language-python">from clientcord.intents import Intents
-
-all_intents = Intents.all()
-
-default_intents = Intents.default()
-
-custom = Intents.guilds | Intents.guild_messages | Intents.message_content</code></pre>
-
-            <h2>creating the main file</h2>
-            <p>create your main bot script. this is the entry point that starts the gateway connection and loads
-                everything.</p>
+            <h2>Step 3: Create the Main File</h2>
+            <p>now you need a way to actually start the bot. create <code>bot.py</code>.</p>
 
             <div class="file-label">bot.py</div>
             <pre><code class="language-python">from clientcord.client import Client
 
+# This looks for your cc_init.py automatically
 client = Client()
 
 if __name__ == "__main__":
     client.run()</code></pre>
 
-            <p>when you call <code>client.run()</code>, clientcord will:</p>
-            <ul>
-                <li>read your <code>cc_init.py</code> config</li>
-                <li>auto-load all files from your <code>/commands</code>, <code>/components</code>, and
-                    <code>/events</code> folders
-                </li>
-                <li>compile execution plans for all registered commands</li>
-                <li>connect to the discord gateway</li>
-            </ul>
-
             <h2>project structure</h2>
-            <p>after these steps your project should look like this:</p>
+            <p>your project should look exactly like this now:</p>
             <div class="tree">
                 commands/<br>
+                &nbsp;&nbsp;ping.py<br>
                 components/<br>
                 events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
                 cc_init.py<br>
                 bot.py
             </div>
+
+            <h2>lazy state & lmdb caching</h2>
+            <p>clientcord is designed for extreme memory efficiency. unlike other libraries that store
+                thousands of objects in your ram, clientcord uses <b>lazy modeling</b> and 100%
+                <b>persistent state caching</b>.
+            </p>
+            <ul>
+                <li><b>low ram</b>: stays under 50MB of RAM even in servers with thousands of members.</li>
+                <li><b>lmdb storage</b>: guild and member data is stored in the <code>.clientcord_cache</code> folder on
+                    disk.</li>
+                <li><b>stateful</b>: your bot "remembers" server state across restarts without making extra API calls.
+                </li>
+            </ul>
+            <p>the <code>.clientcord_cache</code> folder is created automatically in your project root. it acts as the
+                bot's permanent memory, using high-speed memory-mapping (LMDB) to balance disk space and performance.
+            </p>
 
             <div class="nav-footer">
                 <a href="index.html">&larr; prev: introduction</a>

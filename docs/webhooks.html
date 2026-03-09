@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webhooks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>webhooks</h1>
+            <p>webhooks are a low-effort way to post messages to channels in discord. they do not require a bot account
+                to post content, making them powerful for external applications.</p>
+
+            <h2>creating a webhook</h2>
+            <p>create a webhook in a guild channel cleanly.</p>
+
+            <div class="file-label">creating via channel</div>
+            <pre><code class="language-python">webhook = await ctx.channel.create_webhook(name="GitHub Alerts")
+print(f"Token: {webhook['token']}")
+print(f"URL: {webhook['url']}")</code></pre>
+
+            <h2>executing a webhook</h2>
+            <p>most applications execute a webhook directly using a tool, but you can native trigger webhooks using
+                clientcord.</p>
+
+            <div class="file-label">webhook execution</div>
+            <pre><code class="language-python">await ctx.client.execute_webhook(
+    webhook_id="123456789",
+    webhook_token="your_token_here",
+    content="hello from webhook world!",
+    username="Alert System", # Override name
+    avatar_url="https://example.com/icon.png" # Override avatar profile
+)</code></pre>
+
+            <div class="callout">the execute method natively accepts components! simply pass
+                <code>components=[row]</code> and clientcord translates the flags instantly.
+            </div>
+
+            <h2>managing webhooks</h2>
+            <p>if you wish to edit a webhook's name or active channel.</p>
+
+            <div class="file-label">editing webhook</div>
+            <pre><code class="language-python">await ctx.client.modify_webhook("webhook_id", {"name": "News Feed"})</code></pre>
+
+            <div class="file-label">deleting webhook</div>
+            <pre><code class="language-python">await ctx.client.delete_webhook("webhook_id", reason="no longer needed")</code></pre>
+
+            <h2>webhook models</h2>
+            <ul>
+                <li><code>id</code> - the webhook id</li>
+                <li><code>type</code> - type of webhook (Incoming, Channel Follower, Application)</li>
+                <li><code>guild_id</code> - guild id where the webhook exists</li>
+                <li><code>channel_id</code> - channel id mapped to</li>
+                <li><code>user</code> - creator's user model</li>
+                <li><code>name</code> - webhook display string</li>
+                <li><code>token</code> - secure hook token</li>
+            </ul>
+
+            <div class="nav-footer">
+                <a href="users.html">&larr; prev: users</a>
+                <a href="audit-logs.html">next: audit logs &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

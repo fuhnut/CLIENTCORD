@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>users</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>users</h1>
+            <p>the <code>User</code> model represents a discord user globally natively across all contexts, whilst a
+                <code>Member</code> represents a user mapped to a specific guild.
+            </p>
+
+            <h2>the user model</h2>
+            <p>if you retrieve a user directly from the context, it exposes base properties:</p>
+
+            <div class="file-label">fetching users</div>
+            <pre><code class="language-python"># Accessible directly from context for the command author
+author = ctx.user
+
+# Properties available over the User model:
+print(author.id)            # Discord ID snowflake
+print(author.username)      # Display username
+print(author.avatar)        # Avatar hash
+print(author.bot)           # Boolean if the user is a bot
+print(author.system)        # Boolean if the user is an official discord system account</code></pre>
+
+            <h2>the member model</h2>
+            <p>the <code>Member</code> model encapsulates the user within the current guild context and provides
+                high-level functionality like assigning roles.</p>
+
+            <div class="file-label">fetching a member</div>
+            <pre><code class="language-python"># Accessible directly from context!
+member = ctx.member
+
+print(member.nick)          # Guild nickname
+print(member.roles)         # List of Role IDs
+print(member.joined_at)     # Timestamp string
+print(member.premium_since) # Server boosting since timestamp string</code></pre>
+
+            <h2>sending direct messages</h2>
+            <p>to slide into a user's DMs, discord requires opening a dm channel using their recipient ID, then using
+                traditional channel sending procedures.</p>
+
+            <div class="nav-footer">
+                <a href="roles.html">&larr; prev: roles</a>
+                <a href="webhooks.html">next: webhooks &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

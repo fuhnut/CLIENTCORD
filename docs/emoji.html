@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>emoji</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>emoji</h1>
+            <p>custom emoji can be managed per-guild. they can be static or animated, and optionally
+                restricted to specific roles.</p>
+
+            <h2>listing emoji</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">emojis = await ctx.guild.list_emojis()</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">emoji = await ctx.guild.get_emoji("emoji_id")</code></pre>
+
+            <h2>creating emoji</h2>
+            <p>requires the <code>CREATE_GUILD_EXPRESSIONS</code> permission. the image must be
+                base64 encoded and under 256kb.</p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">import base64
+
+with open("emoji.png", "rb") as f:
+    image_data = base64.b64encode(f.read()).decode("utf-8")
+
+emoji = await ctx.guild.create_emoji({
+    "name": "cool_emoji",
+    "image": f"data:image/png;base64,{image_data}",
+    "roles": []
+}, reason="adding new emoji")</code></pre>
+
+            <h2>modifying emoji</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.guild.modify_emoji("emoji_id", {
+    "name": "renamed_emoji"
+}, reason="better name")</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.guild.modify_emoji("emoji_id", {
+    "roles": ["role_id_1", "role_id_2"]
+})</code></pre>
+
+            <h2>deleting emoji</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.guild.delete_emoji("emoji_id", reason="cleanup")</code></pre>
+
+            <h2>application emoji</h2>
+            <p>apps can own up to 2000 emoji that only the app can use. no
+                <code>USE_EXTERNAL_EMOJIS</code> permission required.
+            </p>
+
+            <div class="file-label">list app emoji</div>
+            <pre><code class="language-python">result = await client.list_application_emojis()
+emojis = result["items"]</code></pre>
+
+            <div class="file-label">get a single app emoji</div>
+            <pre><code class="language-python">emoji = await client.get_application_emoji("emoji_id")</code></pre>
+
+            <h2>emoji formats</h2>
+            <p>emoji can be uploaded as jpeg, png, gif, webp, or avif. all emoji are served as webp
+                for best performance. for animated emoji, use the <code>.webp</code> extension with
+                <code>?animated=true</code>.
+            </p>
+
+            <h2>premium emoji</h2>
+            <p>emoji with subscription roles are considered premium emoji and count toward a separate
+                limit of 25. an emoji cannot have both subscription and non-subscription roles.</p>
+
+            <h2>emoji model</h2>
+            <div class="file-label">import</div>
+            <pre><code class="language-python">from clientcord.models import Emoji</code></pre>
+
+            <p>the <code>Emoji</code> model fields:</p>
+            <ul>
+                <li><code>id</code> - emoji id (null for standard unicode emoji)</li>
+                <li><code>name</code> - emoji name</li>
+                <li><code>roles</code> - role ids that can use this emoji</li>
+                <li><code>user</code> - user who created this emoji</li>
+                <li><code>require_colons</code> - whether colons are required</li>
+                <li><code>managed</code> - whether this emoji is managed by an integration</li>
+                <li><code>animated</code> - whether this emoji is animated</li>
+                <li><code>available</code> - whether this emoji can be used</li>
+            </ul>
+
+            <h2>project structure</h2>
+            <p>to keep things organized, your project should follow this structure:</p>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                components/<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
+            <div class="nav-footer">
+                <a href="auto-moderation.html">&larr; prev: auto moderation</a>
+                <span></span>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

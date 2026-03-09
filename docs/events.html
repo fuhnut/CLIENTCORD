@@ -27,59 +27,65 @@
             <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
             <a class="sidebar-link" href="first-command.html">creating your first command</a>
             <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
             <div class="sidebar-section">commands</div>
             <a class="sidebar-link" href="command-options.html">command options</a>
             <a class="sidebar-link" href="middlewares.html">command middlewares</a>
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
             <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
         </nav>
         <div class="main">
 
             <h1>listening to events</h1>
-            <p>events let your bot react to things happening on discord, like messages being sent, members joining, or
-                the bot going online.</p>
+            <p>events are things that happen on discord, like a user joining your server or someone sending a message.
+                clientcord lets you "hear" these events and run code in response.</p>
 
-            <h2>step 1: update your config</h2>
-            <p>make sure your <code>cc_init.py</code> has the events folder configured.</p>
+            <h2>Step 1: The Setup</h2>
+            <p>make sure your <code>cc_init.py</code> tells clientcord where to find your event files. usually, we put
+                them in an <code>/events</code> folder.</p>
 
             <div class="file-label">cc_init.py</div>
-            <pre><code class="language-python">from clientcord.intents import Intents
-
-token = "your-token"
-intents = Intents.default()
-prefix = "!"
-
-commands = "/commands"
-components = "/components"
+            <pre><code class="language-python"># ... (other config)
 events = "/events"</code></pre>
 
-            <h2>step 2: create event files</h2>
-            <p>each event file uses the <code>@event</code> decorator and an async function. place them inside the
-                <code>/events</code> folder.
+            <h2>Step 2: Create an Event File</h2>
+            <p>every event you want to handle should be its own file in <code>/events</code>. you use the
+                <code>@event</code> decorator to tell clientcord which event the function is for.
             </p>
 
-            <h3>example: bot ready event</h3>
+            <h3>When the Bot starts (READY)</h3>
             <div class="file-label">events/ready.py</div>
             <pre><code class="language-python">from clientcord.declare import event
 
 @event("READY")
 async def on_ready(payload):
-    print(f"bot is online")</code></pre>
+    print("I'm awake!")</code></pre>
 
-            <h3>example: message create event</h3>
+            <h3>When someone speaks (MESSAGE_CREATE)</h3>
             <div class="file-label">events/message.py</div>
             <pre><code class="language-python">from clientcord.declare import event
 
 @event("MESSAGE_CREATE")
 async def on_message(payload):
+    # 'payload' is just a dictionary with all the message data!
     content = payload.get("content", "")
-    author = payload.get("author", {}).get("username", "unknown")
-    print(f"{author}: {content}")</code></pre>
+    print(f"I heard: {content}")</code></pre>
 
             <h3>example: guild member add event</h3>
             <div class="file-label">events/member_join.py</div>
@@ -108,7 +114,7 @@ async def on_member_join(payload):
 
             <div class="nav-footer">
                 <a href="first-command.html">&larr; prev: creating your first command</a>
-                <a href="command-options.html">next: command options &rarr;</a>
+                <a href="complete-bot.html">next: complete bot example &rarr;</a>
             </div>
 
             <footer>clientcord &copy; 2026</footer>

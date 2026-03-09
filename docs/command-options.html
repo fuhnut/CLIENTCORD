@@ -24,22 +24,68 @@
             <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
             <a class="sidebar-link" href="first-command.html">creating your first command</a>
             <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
             <div class="sidebar-section">commands</div>
             <a class="sidebar-link" href="command-options.html">command options</a>
             <a class="sidebar-link" href="middlewares.html">command middlewares</a>
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
             <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
         </nav>
         <div class="main">
 
             <h1>command options</h1>
-            <p>options let users pass inputs into your commands. clientcord provides typed option constructors for every
-                discord option type.</p>
+            <p>options let users pass information to your commands (like a name, a number, or a file). clientcord makes
+                this super easy with two ways to do it.</p>
+
+            <h2>The Easy Way: Dictionary Syntax</h2>
+            <p>this is the fastest way to add options. you just pass a simple dictionary with the type and description.
+                clientcord handles all the boring stuff for you!</p>
+
+            <div class="file-label">commands/kick.py</div>
+            <pre><code class="language-python">from clientcord.declare import command, options
+
+@options(
+    target={"type": "user", "description": "the user to kick", "required": True},
+    reason={"type": "text", "description": "why you are kicking them"}
+)
+@command(name="kick", description="kick a member")
+class KickCommand:
+    async def run(self, ctx, target, reason="no reason provided"):
+        # 'target' is automatically converted to a User object!
+        await ctx.write(f"kicked {target.username} for {reason}")</code></pre>
+
+            <h3>supported type names</h3>
+            <ul>
+                <li><code>"text"</code> or <code>"string"</code></li>
+                <li><code>"integer"</code> (whole numbers)</li>
+                <li><code>"bool"</code> (true/false)</li>
+                <li><code>"user"</code> (server members)</li>
+                <li><code>"channel"</code> (text/voice channels)</li>
+                <li><code>"role"</code> (guild roles)</li>
+                <li><code>"attachment"</code> (files/images)</li>
+            </ul>
+
+            <hr>
+
+            <h2>The Advanced Way: Option Constructors</h2>
+            <p>if you need more control, you can use built-in functions for each type. this is great for adding choices
+                or specific requirements.</p>
 
             <h2>string options</h2>
             <div class="file-label">commands/greet.py</div>
@@ -135,8 +181,24 @@ class UploadCommand:
     async def run(self, ctx, file):
         await ctx.write(f"received file: {file}")</code></pre>
 
+            <h2>project structure</h2>
+            <p>your project should look exactly like this now:</p>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                &nbsp;&nbsp;greet.py<br>
+                &nbsp;&nbsp;kick.py<br>
+                components/<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
             <div class="nav-footer">
-                <a href="events.html">&larr; prev: listening to events</a>
+                <a href="complete-bot.html">&larr; prev: complete bot example</a>
                 <a href="middlewares.html">next: command middlewares &rarr;</a>
             </div>
 

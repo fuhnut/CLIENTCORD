@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>command types</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>command types</h1>
+            <p>clientcord commands execute as hybrid commands by default. this means your command can be invoked as an
+                application command (slash) or through conventional plain-text messages (prefix).</p>
+
+            <h2>controlling command routing</h2>
+            <p>you can strictly enforce how a command is triggered using boolean flags inside the <code>@command</code>
+                decorator. this is useful if you require ui components and solely want slash integration, or if you want
+                a developer-only terminal command executed exclusively via prefix strings.</p>
+
+            <div class="file-label">exclusive slash command</div>
+            <pre><code class="language-python">from clientcord.declare import command
+
+# the slash=true flag blocks message_create events from ever reaching this command
+@command(name="profile", description="view user profile", slash=True)
+class ProfileCommand:
+    async def run(self, ctx):
+        await ctx.write("this command only triggers via slash commands!")</code></pre>
+
+            <div class="file-label">exclusive prefix command</div>
+            <pre><code class="language-python"># the prefix=true flag blocks interaction_create events and is hidden from discord's command picker ui
+@command(name="eval", prefix=True)
+class EvalCommand:
+    async def run(self, ctx):
+        await ctx.write("this command only triggers via traditional plain text prefix!")</code></pre>
+
+            <div class="file-label">explicit hybrid command</div>
+            <pre><code class="language-python"># the hybrid=true flag is the default out of the box option if no flags are provided
+@command(name="ping", description="pong!", hybrid=True)
+class PingCommand:
+    async def run(self, ctx):
+        await ctx.write("this command can be triggered cleanly via either method!")</code></pre>
+
+            <div class="nav-footer">
+                <a href="prefix-commands.html">&larr; prev: prefix commands</a>
+                <a href="components.html">next: building components &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

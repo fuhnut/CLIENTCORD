@@ -6,6 +6,8 @@ from .utils.compression import GatewayDecompressor
 from .logger import info, debug, error, warn
 
 class Gateway:
+    __slots__ = ("token", "intents", "dispatcher", "ws", "seq", "session_id", "resume_gateway_url", "url", "heartbeat_interval", "heartbeat_task", "decompressor", "closed")
+
     def __init__(self, token: str, intents: int, dispatcher: "Dispatcher") -> None:
         self.token = token
         self.intents = intents
@@ -40,15 +42,20 @@ class Gateway:
 
     async def _receive_loop(self) -> None:
         async for msg in self.ws:
-            if isinstance(msg, bytes):
-                decompressed = self.decompressor.decompress(msg)
-                if not decompressed:
-                    continue
-                data = msgspec.json.decode(decompressed)
-            else:
-                data = msgspec.json.decode(msg)
+            try:
+                if isinstance(msg, bytes):
+                    decompressed = self.decompressor.decompress(msg)
+                    if not decompressed:
+                        continue
+                    data = msgspec.json.decode(decompressed)
+                else:
+                    data = msgspec.json.decode(msg)
                 
-            asyncio.create_task(self._handle_payload(data))
+                # Handle payload synchronously for state management
+                # Only delegate to tasks when dispatching to users
+                await self._handle_payload(data)
+            except Exception as e:
+                error(f"Gateway loop error: {e}")
 
     async def _handle_payload(self, payload: dict) -> None:
         op = payload.get("op")
@@ -67,7 +74,7 @@ class Gateway:
             await self._identify_or_resume()
 
         elif op == 11:
-            debug("Heartbeat acknowledged")
+            pass # Throttled ACK logging
 
         elif op == 9:
             warn("Invalid session. Reconnecting.")
@@ -89,7 +96,9 @@ class Gateway:
                 self.resume_gateway_url = d["resume_gateway_url"] + "?v=10&encoding=json&compress=zlib-stream"
                 info(f"Session ready: {self.session_id}")
             
-            await self.dispatcher.dispatch(t, d)
+            # Only taskify if there are handlers to avoid bloat
+            if self.dispatcher.has_handler(t) or t == "READY":
+                asyncio.create_task(self.dispatcher.dispatch(t, d))
 
     async def _identify_or_resume(self) -> None:
         if self.session_id and self.seq:
@@ -111,7 +120,7 @@ class Gateway:
                 }
             }
         }
-        if self.ws and not self.ws.closed:
+        if self.ws and getattr(self.ws, "state", 0) == 1:
             await self.ws.send(msgspec.json.encode(payload))
 
     async def _resume(self) -> None:
@@ -124,7 +133,7 @@ class Gateway:
                 "seq": self.seq
             }
         }
-        if self.ws and not self.ws.closed:
+        if self.ws and getattr(self.ws, "state", 0) == 1:
             await self.ws.send(msgspec.json.encode(payload))
 
     async def _heartbeat(self) -> None:
@@ -133,7 +142,7 @@ class Gateway:
             debug("Sending heartbeat")
             payload = {"op": 1, "d": self.seq}
             try:
-                if self.ws and not self.ws.closed:
+                if self.ws and getattr(self.ws, "state", 0) == 1:
                     await self.ws.send(msgspec.json.encode(payload))
             except Exception:
                 pass

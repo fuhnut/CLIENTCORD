@@ -24,23 +24,36 @@
             <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
             <a class="sidebar-link" href="first-command.html">creating your first command</a>
             <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
             <div class="sidebar-section">commands</div>
             <a class="sidebar-link" href="command-options.html">command options</a>
             <a class="sidebar-link" href="middlewares.html">command middlewares</a>
             <a class="sidebar-link" href="subcommands.html">sub commands</a>
             <a class="sidebar-link" href="error-handling.html">handling errors</a>
             <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
             <div class="sidebar-section">components v2</div>
             <a class="sidebar-link" href="components.html">building components</a>
             <a class="sidebar-link" href="handling-components.html">handling components</a>
             <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
         </nav>
         <div class="main">
 
             <h1>modals</h1>
             <p>modals are popup forms that request structured input from users. they can contain text inputs, select
                 menus, and static text. all interactive components inside a modal must be wrapped in a
-                <code>Label</code>.</p>
+                <code>Label</code>.
+            </p>
 
             <h2>creating a modal</h2>
             <div class="file-label">basic modal structure</div>
@@ -94,7 +107,7 @@ modal = (
 
             <h3>sending the modal</h3>
             <div class="file-label">sending from a command</div>
-            <pre><code class="language-python">await interaction.modal(modal)</code></pre>
+            <pre><code class="language-python">await ctx.show_modal(modal)</code></pre>
 
             <h2>2. static text in modal</h2>
             <p>use <code>TextDisplay</code> to show read-only text inside a modal.</p>
@@ -191,56 +204,38 @@ modal = (
     .set_components([label])
 )</code></pre>
 
-            <h2>handling modals</h2>
-            <p>modals are handled with the <code>ModalCommand</code> class. place these files in your
-                <code>/components</code> folder.</p>
+            <h2>2. Handing the Modal Result</h2>
+            <p>just like buttons, you create a handler in <code>/components</code> to process the form when it's
+                submitted.</p>
 
             <div class="file-label">components/feedback_handler.py</div>
             <pre><code class="language-python">from clientcord.components import ModalCommand
+from clientcord.declare import modal
 
+@modal(custom_id="feedback_modal")
 class FeedbackModal(ModalCommand):
-    def filter(self, ctx):
-        return ctx.custom_id == "feedback_modal"
-
     async def run(self, ctx):
-        text = ctx.interaction.get_input_value("feedback")
-        await ctx.write({"content": f"your feedback: {text}"})</code></pre>
+        # Drill into the payload to get the user's input
+        data = ctx.interaction.get("data", {}).get("components", [])
+        # clientcord keeps the structure simple to keep RAM low!
+        await ctx.write("thanks for your feedback!")</code></pre>
 
-            <div class="callout">modal handlers are auto-loaded from the <code>/components</code> folder alongside
-                component handlers. use the <code>filter</code> method to match the <code>custom_id</code> you set on
-                the modal.</div>
 
-            <h2>triggering modals from buttons</h2>
-            <p>you can open a modal when a user clicks a button by calling <code>interaction.modal()</code> inside your
-                component handler.</p>
-
-            <div class="file-label">components/open_modal_button.py</div>
-            <pre><code class="language-python">from clientcord.components import ComponentCommand, Modal, Label, TextInput, TextInputStyle
-
-class OpenModalButton(ComponentCommand):
-    component_type = "Button"
-
-    def filter(self, ctx):
-        return ctx.custom_id == "open_feedback"
-
-    async def run(self, ctx):
-        text_input = (
-            TextInput()
-            .set_custom_id("feedback")
-            .set_style(TextInputStyle.paragraph)
-            .set_placeholder("your thoughts...")
-        )
-
-        modal = (
-            Modal()
-            .set_title("feedback form")
-            .set_custom_id("feedback_modal")
-            .set_components([
-                Label().set_label("your feedback").set_component(text_input)
-            ])
-        )
-
-        await ctx.interaction.modal(modal)</code></pre>
+            <h2>project structure</h2>
+            <p>your project should look exactly like this now:</p>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                components/<br>
+                &nbsp;&nbsp;hello_button.py<br>
+                &nbsp;&nbsp;feedback_handler.py<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
 
             <div class="nav-footer">
                 <a href="handling-components.html">&larr; prev: handling components</a>

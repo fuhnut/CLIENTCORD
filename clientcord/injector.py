@@ -18,9 +18,21 @@ class Injector:
                 plan.append(lambda ctx, _, n=name: {n: ctx})
                 continue
                 
+            if name == "client":
+                from .client import Client
+                service = self.container.resolve(Client)
+                if service is not None:
+                    plan.append(lambda ctx, _, s=service, n=name: {n: s})
+                    continue
+                
+            if name == "payload":
+                plan.append(lambda ctx, payload, n=name: {n: payload})
+                continue
+                
             typ = param.annotation
             if typ is inspect.Parameter.empty:
-                plan.append(lambda ctx, _, n=name: {})
+                # If no type, and it's not a known name, try payload
+                plan.append(lambda ctx, payload, n=name: {n: payload})
                 continue
 
             service = self.container.resolve(typ)
@@ -28,7 +40,7 @@ class Injector:
                 plan.append(lambda ctx, _, s=service, n=name: {n: s})
                 continue
                 
-            plan.append(lambda ctx, payload, t=typ, n=name: {n: ctx.resolve(t, payload)})
+            plan.append(lambda ctx, payload, t=typ, n=name: {n: ctx.resolve(t, payload) if ctx else payload})
             
         return plan
 

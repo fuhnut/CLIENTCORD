@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>channels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>channels</h1>
+            <p>channels represent communication spaces in discord. clientcord provides models and methods for
+                every channel type, including text, voice, threads, forums, and media channels.</p>
+
+            <h2>channel types</h2>
+            <p>every channel has a <code>type</code> field. use the <code>ChannelType</code> class to reference them.
+            </p>
+
+            <div class="file-label">channel types</div>
+            <pre><code class="language-python">from clientcord.models import ChannelType
+
+ChannelType.guild_text       # 0 - text channel
+ChannelType.dm               # 1 - direct message
+ChannelType.guild_voice      # 2 - voice channel
+ChannelType.group_dm         # 3 - group dm
+ChannelType.guild_category   # 4 - category
+ChannelType.guild_announcement  # 5 - announcement
+ChannelType.public_thread    # 11 - public thread
+ChannelType.private_thread   # 12 - private thread
+ChannelType.guild_stage_voice  # 13 - stage channel
+ChannelType.guild_forum      # 15 - forum channel
+ChannelType.guild_media      # 16 - media channel</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python"># typically you get channels from the ctx, e.g. ctx.channel
+channel = await ctx.client.get_channel("123456789")</code></pre>
+
+            <h2>modifying a channel</h2>
+            <p>update a channel's settings. all parameters are optional. supports the
+                <code>X-Audit-Log-Reason</code> header via the <code>reason</code> parameter.
+            </p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.channel.edit(
+    name="new-name",
+    topic="updated topic",
+    reason="reorganizing channels"
+)</code></pre>
+
+            <h2>deleting a channel</h2>
+            <div class="callout">deleting a guild channel cannot be undone. for dms, closing is reversible by reopening.
+            </div>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.channel.delete(reason="cleanup")</code></pre>
+
+            <h2>permission overwrites</h2>
+            <p>permission overwrites control per-channel access for roles and members.</p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">from clientcord.models import Overwrite
+
+await ctx.channel.edit_permissions(
+    "987654321",
+    allow="1024",
+    deny="0",
+    type="role",
+    reason="allow role to view"
+)</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.channel.delete_permission("987654321")</code></pre>
+
+            <h2>invites</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">invite = await ctx.channel.create_invite(
+    max_age=3600,
+    max_uses=10,
+    temporary=False
+)</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">invites = await ctx.channel.get_invites()</code></pre>
+
+            <h2>threads</h2>
+            <p>threads are temporary sub-channels. use these methods to create, join, and manage threads.</p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">thread = await ctx.channel.start_thread_from_message(
+    "message_id",
+    name="discussion",
+    auto_archive_duration=1440
+)</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">thread = await ctx.channel.start_thread(
+    name="general-chat",
+    type="public_thread"
+)</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await thread_channel.join_thread()
+await thread_channel.leave_thread()
+await thread_channel.add_thread_member("user_id")
+await thread_channel.remove_thread_member("user_id")</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">members = await thread_channel.list_thread_members(with_member=True)</code></pre>
+
+            <h2>archived threads</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">public = await ctx.channel.list_public_archived_threads()
+private = await ctx.channel.list_private_archived_threads()
+joined = await ctx.channel.list_joined_private_archived_threads()</code></pre>
+
+            <h2>typing indicator</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.channel.trigger_typing()</code></pre>
+
+            <h2>following announcement channels</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">result = await ctx.channel.follow("target_channel_id")</code></pre>
+
+            <h2>channel model</h2>
+            <p>the <code>Channel</code> model includes all fields from the discord api. sub-types like
+                <code>Overwrite</code>, <code>ThreadMetadata</code>, <code>ThreadMember</code>,
+                <code>ForumTag</code>, and <code>DefaultReaction</code> are fully typed.
+            </p>
+
+            <div class="file-label">import models</div>
+            <pre><code class="language-python">    ForumLayoutType,
+)</code></pre>
+
+            <h2>project structure</h2>
+            <p>to keep things organized, your project should follow this structure:</p>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                components/<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
+            <div class="nav-footer">
+                <a href="modals.html">&larr; prev: modals</a>
+                <a href="audit-logs.html">next: audit logs &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

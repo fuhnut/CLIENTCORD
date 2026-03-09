@@ -1,20 +1,21 @@
 import msgspec
+from .base import ClientObject
 
-class User(msgspec.Struct, kw_only=True):
+class User(ClientObject):
     id: str
-    username: str
-    discriminator: str
+    username: str | None = None
+    discriminator: str | None = None
     avatar: str | None = None
-    bot: bool = False
-    system: bool = False
-    mfa_enabled: bool = False
+    bot: bool | None = None
+    system: bool | None = None
+    mfa_enabled: bool | None = None
     banner: str | None = None
     accent_color: int | None = None
     locale: str | None = None
-    verified: bool = False
+    verified: bool | None = None
     email: str | None = None
-    flags: int = 0
-    premium_type: int = 0
-    public_flags: int = 0
+    flags: int | None = None
+    premium_type: int | None = None
+    public_flags: int | None = None
     avatar_decoration_data: dict | None = None
     global_name: str | None = None

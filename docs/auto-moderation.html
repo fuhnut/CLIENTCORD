@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>auto moderation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>auto moderation</h1>
+            <p>auto moderation lets each guild create rules that trigger based on message content or
+                member profile. when triggered, rules automatically execute actions like blocking messages
+                or timing out users.</p>
+
+            <h2>trigger types</h2>
+            <p>each rule watches for a specific type of content.</p>
+
+            <div class="file-label">trigger types</div>
+            <pre><code class="language-python">from clientcord.models import TriggerType
+
+TriggerType.keyword         # 1 - words from a custom list
+TriggerType.spam            # 3 - generic spam detection
+TriggerType.keyword_preset  # 4 - internal wordsets (profanity, slurs, etc)
+TriggerType.mention_spam    # 5 - too many unique mentions
+TriggerType.member_profile  # 6 - keywords in member profiles</code></pre>
+
+            <h2>action types</h2>
+            <p>actions are what happens when a rule triggers.</p>
+
+            <div class="file-label">action types</div>
+            <pre><code class="language-python">from clientcord.models import ActionType
+
+ActionType.block_message             # 1 - block the message
+ActionType.send_alert_message        # 2 - log to a channel
+ActionType.timeout                   # 3 - timeout the user
+ActionType.block_member_interaction  # 4 - block text/voice/interactions</code></pre>
+
+            <h2>listing rules</h2>
+            <p>requires the <code>MANAGE_GUILD</code> permission.</p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">rules = await ctx.guild.list_auto_moderation_rules()</code></pre>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">rule = await ctx.guild.get_auto_moderation_rule("rule_id")</code></pre>
+
+            <h2>creating a rule</h2>
+            <p>create a keyword filter that blocks messages containing specific words and sends an
+                alert to a log channel.</p>
+
+            <div class="file-label">example</div>
+            <pre><code class="language-python">rule = await ctx.guild.create_auto_moderation_rule(
+    name="profanity filter",
+    event_type="message_send",
+    trigger_type="keyword",
+    trigger_metadata={
+        "keyword_filter": ["badword1", "badword2"]
+    },
+    actions=[
+        {"type": "block_message"}
+    ],
+    enabled=True
+)</code></pre>
+
+            <h2>creating a mention spam rule</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">rule = await ctx.guild.create_auto_moderation_rule(
+    name="spam filter",
+    event_type="message_send",
+    trigger_type="spam",
+    actions=[
+        {
+            "type": "timeout",
+            "metadata": {"duration_seconds": 3600}
+        }
+    ],
+    enabled=True
+)</code></pre>
+
+            <h2>creating a preset rule</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">rule = await ctx.guild.create_auto_moderation_rule(
+    name="preset filter",
+    event_type="message_send",
+    trigger_type="keyword_preset",
+    trigger_metadata={
+        "presets": [
+            "profanity",
+            "slurs"
+        ],
+        "allow_list": ["hell", "damn"]
+    },
+    actions=[
+        {"type": "block_message"}
+    ],
+    enabled=True
+)</code></pre>
+
+            <h2>modifying a rule</h2>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.guild.modify_auto_moderation_rule(
+    "rule_id",
+    enabled=False,
+    actions=[
+        {"type": "block_message"}
+    ]
+)</code></pre>
+
+            <p>deleting a rule:</p>
+            <div class="file-label">example</div>
+            <pre><code class="language-python">await ctx.guild.delete_auto_moderation_rule("rule_id", reason="no longer needed")</code></pre>
+
+            <h2>keyword matching</h2>
+            <p>keywords support wildcard patterns with <code>*</code>:</p>
+            <ul>
+                <li><code>cat*</code> - prefix match (catches "catch", "catapult")</li>
+                <li><code>*cat</code> - suffix match (catches "wildcat")</li>
+                <li><code>*cat*</code> - anywhere match (catches "location")</li>
+                <li><code>cat</code> - whole word match (only "cat")</li>
+            </ul>
+            <p>all matches are case insensitive. each keyword can be up to 60 characters.</p>
+
+            <h2>limits</h2>
+            <ul>
+                <li>keyword rules: max 6 per guild, 1000 keywords, 10 regex patterns</li>
+                <li>spam rules: max 1 per guild</li>
+                <li>keyword preset rules: max 1 per guild, 1000 allow list entries</li>
+                <li>mention spam rules: max 1 per guild, max 50 mention limit</li>
+                <li>member profile rules: max 1 per guild</li>
+                <li>exempt roles: max 20 per rule</li>
+                <li>exempt channels: max 50 per rule</li>
+            </ul>
+
+            <h2>models</h2>
+            <div class="file-label">import auto moderation models</div>
+            <pre><code class="language-python">from clientcord.models import (
+    AutoModerationRule, AutoModerationAction,
+    TriggerMetadata, ActionMetadata,
+    TriggerType, EventType,
+    KeywordPresetType, ActionType,
+)</code></pre>
+
+            <div class="nav-footer">
+                <a href="audit-logs.html">&larr; prev: audit logs</a>
+                <a href="emoji.html">next: emoji &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

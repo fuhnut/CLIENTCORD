@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>complete bot example - clientcord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="https://files.catbox.moe/zjxudh.png" alt="logo">
+                clientcord
+            </div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>complete bot example</h1>
+            <p>this guide brings everything together. we will create a full, working bot with a command, a ready event,
+                and a message logger.</p>
+
+            <h2>1. project structure</h2>
+            <p>create a folder for your bot and set up these files and directories exactly like this:</p>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                components/<br>
+                &nbsp;&nbsp;ping_handler.py<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
+            <h2>2. configuring your bot (cc_init.py)</h2>
+            <p>this file defines how your bot behaves. it tells clientcord where to find your commands, events, and
+                component handlers.</p>
+            <div class="file-label">cc_init.py</div>
+            <pre><code class="language-python">from clientcord.intents import Intents
+
+token = "YOUR_BOT_TOKEN_HERE" # Get this from discord.com/developers
+intents = Intents.all() # Use all intents for full functionality
+
+# Tell clientcord which folders to watch
+commands = "/commands"
+events = "/events"
+components = "/components"</code></pre>
+
+            <h2>3. the main file (bot.py)</h2>
+            <p>this is the file you run to start your bot.</p>
+            <div class="file-label">bot.py</div>
+            <pre><code class="language-python">from clientcord.client import Client
+
+# Initialize the client!
+client = Client()
+
+if __name__ == "__main__":
+    client.run()</code></pre>
+
+            <h2>4. creating a command with components (commands/ping.py)</h2>
+            <p>let's create a command that responds with a button!</p>
+            <div class="file-label">commands/ping.py</div>
+            <pre><code class="language-python">from clientcord.declare import command
+from clientcord.components import ActionRow, Button, ButtonStyle
+
+@command(name="ping", description="ping with a button!")
+class PingCommand:
+    async def run(self, ctx):
+        # Create a button!
+        row = ActionRow().set_components([
+            Button()
+            .set_custom_id("ping_btn")
+            .set_label("click me!")
+            .set_style(ButtonStyle.primary)
+        ])
+
+        await ctx.write("pong!", components=[row])</code></pre>
+
+            <h2>5. handling component interactions (components/ping_handler.py)</h2>
+            <p>now we need to tell the bot what to do when that button is clicked.</p>
+            <div class="file-label">components/ping_handler.py</div>
+            <pre><code class="language-python">from clientcord.declare import component
+from clientcord.components import ComponentCommand
+
+@component(custom_id="ping_btn")
+class PingHandler(ComponentCommand):
+    async def run(self, ctx):
+        # This runs when the button with ID 'ping_btn' is clicked!
+        await ctx.write("you clicked the button!", ephemeral=True)</code></pre>
+
+            <h2>6. setting up events (events/ready.py, message.py & member_join.py)</h2>
+            <p>these files handle global events like the bot starting, messages being sent, or new members joining.</p>
+            <div class="file-label">events/ready.py</div>
+            <pre><code class="language-python">from clientcord.declare import event
+
+@event(name="READY")
+async def on_ready(client, payload):
+    print(f"Logged in as {client.user.username}!")
+    await client.sync_commands()</code></pre>
+
+            <div class="file-label">events/message.py</div>
+            <pre><code class="language-python">from clientcord.declare import event
+
+@event(name="MESSAGE_CREATE")
+async def on_message(client, message):
+    if message.author.bot: return
+    print(f"New message from {message.author.username}: {message.content}")</code></pre>
+
+            <div class="file-label">events/member_join.py</div>
+            <pre><code class="language-python">from clientcord.declare import event
+
+@event(name="GUILD_MEMBER_ADD")
+async def on_member_join(client, payload):
+    # 'payload' contains user and member data
+    username = payload.get("user", {}).get("username")
+    print(f"Welcome to the server, {username}!")</code></pre>
+
+            <h2>7. running your bot</h2>
+            <p>open your terminal in your project folder and run:</p>
+            <div class="file-label">terminal</div>
+            <pre><code class="language-bash">python bot.py</code></pre>
+            <p>your bot is now alive! it handles slash commands, interactive buttons, message logging, and welcomes new
+                members automatically.</p>
+
+            <div class="nav-footer">
+                <a href="events.html">&larr; prev: listening to events</a>
+                <a href="command-options.html">next: command options &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,6 +1,7 @@
 import lmdb
 import msgspec
 import os
+from typing import Any
 from .utils.hashing import hash_key
 
 class LMDBCache:
@@ -8,7 +9,7 @@ class LMDBCache:
         os.makedirs(path, exist_ok=True)
         self.env = lmdb.open(path, map_size=map_size, writemap=True, readahead=True)
 
-    def set(self, key: str | bytes, value: msgspec.Struct) -> None:
+    def set(self, key: str | bytes, value: Any) -> None:
         h_key = hash_key(key)
         data = msgspec.json.encode(value)
         with self.env.begin(write=True) as txn:

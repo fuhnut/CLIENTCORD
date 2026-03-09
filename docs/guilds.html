@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>guilds</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo"><img src="https://files.catbox.moe/zjxudh.png" alt="logo">clientcord</div>
+            <div class="sidebar-section">getting started</div>
+            <a class="sidebar-link" href="index.html">introduction</a>
+            <a class="sidebar-link" href="configuring.html">configuring clientcord</a>
+            <a class="sidebar-link" href="first-command.html">creating your first command</a>
+            <a class="sidebar-link" href="events.html">listening to events</a>
+            <a class="sidebar-link" href="complete-bot.html">complete bot example</a>
+            <div class="sidebar-section">commands</div>
+            <a class="sidebar-link" href="command-options.html">command options</a>
+            <a class="sidebar-link" href="middlewares.html">command middlewares</a>
+            <a class="sidebar-link" href="subcommands.html">sub commands</a>
+            <a class="sidebar-link" href="error-handling.html">handling errors</a>
+            <a class="sidebar-link" href="prefix-commands.html">prefix commands</a>
+            <a class="sidebar-link" href="command-types.html">command types</a>
+            <div class="sidebar-section">components v2</div>
+            <a class="sidebar-link" href="components.html">building components</a>
+            <a class="sidebar-link" href="handling-components.html">handling components</a>
+            <a class="sidebar-link" href="modals.html">modals</a>
+            <div class="sidebar-section">resources</div>
+            <a class="sidebar-link" href="guilds.html">guilds</a>
+            <a class="sidebar-link" href="channels.html">channels</a>
+            <a class="sidebar-link" href="messages.html">messages</a>
+            <a class="sidebar-link" href="roles.html">roles</a>
+            <a class="sidebar-link" href="users.html">users</a>
+            <a class="sidebar-link" href="webhooks.html">webhooks</a>
+            <a class="sidebar-link" href="audit-logs.html">audit logs</a>
+            <a class="sidebar-link" href="auto-moderation.html">auto moderation</a>
+            <a class="sidebar-link" href="emoji.html">emoji</a>
+        </nav>
+        <div class="main">
+
+            <h1>guilds</h1>
+            <p>guilds in discord are essentially the servers that contain users, channels, roles, and emojis. clientcord
+                maps guild information using the <code>Guild</code> model.</p>
+
+            <h2>fetching a guild</h2>
+            <div class="file-label">via context</div>
+            <pre><code class="language-python"># standard method if available in the context payload
+guild = ctx.guild</code></pre>
+
+            <h2>moderating users</h2>
+            <p>the guild model exposes high-level moderation actions to seamlessly remove or penalize users.</p>
+
+            <div class="file-label">banning a member</div>
+            <pre><code class="language-python">await ctx.guild.ban(
+    "user_id",
+    delete_message_seconds=86400, # Delete last 24h of messages
+    reason="spamming the chat"
+)</code></pre>
+
+            <div class="file-label">unbanning a user</div>
+            <pre><code class="language-python">await ctx.guild.unban("user_id", reason="appealed")</code></pre>
+
+            <div class="file-label">kicking a member</div>
+            <pre><code class="language-python">await ctx.guild.kick("user_id", reason="inactive")</code></pre>
+
+            <h2>guild properties</h2>
+            <p>your <code>Guild</code> model will contain critical properties about the server.</p>
+            <ul>
+                <li><code>id</code> - the guild id</li>
+                <li><code>name</code> - the guild name</li>
+                <li><code>owner_id</code> - id of the server owner</li>
+                <li><code>member_count</code> - total members (approximate if full data is missing)</li>
+                <li><code>icon</code> - the guild icon hash</li>
+                <li><code>features</code> - list of guild features (e.g., 'ANIMATED_ICON')</li>
+            </ul>
+
+            <h2>project structure</h2>
+            <p>to keep things organized, your project should follow this structure:</p>
+            <div class="tree">
+                commands/<br>
+                &nbsp;&nbsp;ping.py<br>
+                components/<br>
+                events/<br>
+                &nbsp;&nbsp;ready.py<br>
+                &nbsp;&nbsp;message.py<br>
+                &nbsp;&nbsp;member_join.py<br>
+                cc_init.py<br>
+                bot.py
+            </div>
+
+            <div class="nav-footer">
+                <a href="index.html">&larr; prev: introduction</a>
+                <a href="channels.html">next: channels &rarr;</a>
+            </div>
+
+            <footer>clientcord &copy; 2026</footer>
+        </div>
+    </div>
+</body>
+
+</html>
